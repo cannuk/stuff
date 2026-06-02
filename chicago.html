@@ -264,6 +264,7 @@
       }
       .tabs {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         gap: 8px;
         margin: 4px 0 2px;
@@ -376,6 +377,76 @@
         font-size: 13px;
         color: var(--dim);
         margin-top: 8px;
+      }
+      .td-group {
+        font-family: var(--disp);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--sky);
+        margin: 6px 0 12px;
+        text-align: center;
+      }
+      .td-group + .td-group {
+        margin-top: 22px;
+      }
+      .td-item {
+        display: grid;
+        grid-template-columns: 24px 1fr;
+        gap: 12px;
+        background: var(--ink2);
+        border: 1px solid var(--line-soft);
+        border-radius: 13px;
+        padding: 13px 15px;
+        margin-bottom: 10px;
+        align-items: start;
+      }
+      .td-check {
+        width: 24px;
+        height: 24px;
+        border: 1.5px solid var(--sky-dim);
+        border-radius: 7px;
+        background: none;
+        color: #08131d;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: 0.15s;
+        margin-top: 1px;
+      }
+      .td-check.on,
+      .td-item.done .td-check {
+        background: var(--sky);
+        border-color: var(--sky);
+      }
+      .td-item.locked .td-check {
+        background: var(--sky-dim);
+        border-color: var(--sky-dim);
+        cursor: default;
+        color: #0b1622;
+      }
+      .td-label {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--cream);
+      }
+      .td-detail {
+        font-size: 12.5px;
+        color: var(--dim);
+        margin-top: 3px;
+        line-height: 1.45;
+      }
+      .td-item.done .td-label {
+        text-decoration: line-through;
+        color: var(--dim);
+      }
+      .td-item .meta {
+        margin-top: 9px;
       }
       .daysub .star {
         color: var(--red);
@@ -651,6 +722,7 @@
       <div class="tabs" id="tabs">
         <button class="tab active" id="tab-itin">Itinerary</button>
         <button class="tab" id="tab-fc">Forecast</button>
+        <button class="tab" id="tab-td">To Book</button>
       </div>
     </div>
 
@@ -663,6 +735,7 @@
       <div class="wx" id="wx"></div>
       <div id="panel"></div>
       <div id="forecast" style="display: none"></div>
+      <div id="todo" style="display: none"></div>
 
       <footer>
         Sean <svg class="star s-xs"><use href="#cs" /></svg> Alana
@@ -1522,22 +1595,135 @@
         }).join("")
         el.innerHTML = note + cards
       }
+      const TODO = [
+        {
+          label: "Gangster tour time slot",
+          detail:
+            "Untouchable Tours — pick a Sunday departure (9 AM–1 PM), $38/person.",
+          phone: "+17738811195",
+          url: "https://gangstertour.com",
+        },
+        {
+          label: "Saturday steak reservation",
+          detail:
+            "Chicago Chop House (pick) or Gibsons. Book the evening table.",
+          phone: "+13127877100",
+        },
+        {
+          label: "Friday dinner reservation",
+          detail:
+            "Pick one of the five before-jazz spots and reserve (Purple Pig shown).",
+          phone: "+13124641744",
+        },
+        {
+          label: "Sunday dinner",
+          detail:
+            "Tufano’s takes reservations; Twin Anchors is walk-in only (expect a wait).",
+          phone: "+13127333393",
+        },
+        {
+          label: "Jazz Showcase tickets",
+          detail:
+            "Friday evening set, Sean & Alana. ~$20–30, cash at door or card online.",
+          phone: "+13123600234",
+          url: "https://jazzshowcase.com",
+        },
+        {
+          label: "Call Lou Mitchell’s",
+          detail: "Optional — call ahead for breakfast or expect a short wait.",
+          phone: "+13129393111",
+        },
+        {
+          label: "Confirm Cale’s GO Fest days",
+          detail: "Friday’s set — is he also playing Saturday and/or Sunday?",
+        },
+      ]
+      const BOOKED = [
+        "Hotel — Congress Plaza (Jun 4–8)",
+        "Flights — SFO ⇄ ORD",
+        "Architecture cruise — Sat 10:15 AM",
+        "Cale’s GO Fest ticket",
+      ]
+      let tdDone = {}
+      try {
+        tdDone = JSON.parse(localStorage.getItem("cc_todo")) || {}
+      } catch (e) {
+        tdDone = {}
+      }
+      function toggleTodo(i) {
+        tdDone[i] = !tdDone[i]
+        try {
+          localStorage.setItem("cc_todo", JSON.stringify(tdDone))
+        } catch (e) {}
+        renderTodo()
+      }
+      function renderTodo() {
+        const el = document.getElementById("todo")
+        if (!el) return
+        const rows = TODO.map((it, i) => {
+          const done = !!tdDone[i]
+          let acts = ""
+          if (it.phone)
+            acts +=
+              '<a class="btn" href="tel:' + it.phone + '">&#9742; Call</a>'
+          if (it.url)
+            acts +=
+              '<a class="btn" target="_blank" rel="noopener" href="' +
+              it.url +
+              '">Visit site</a>'
+          return (
+            '<div class="td-item' +
+            (done ? " done" : "") +
+            '"><button class="td-check' +
+            (done ? " on" : "") +
+            '" onclick="toggleTodo(' +
+            i +
+            ')" aria-label="Toggle done">' +
+            (done ? "\u2713" : "") +
+            "</button>" +
+            '<div class="td-body"><div class="td-label">' +
+            it.label +
+            "</div>" +
+            (it.detail
+              ? '<div class="td-detail">' + it.detail + "</div>"
+              : "") +
+            (acts ? '<div class="meta">' + acts + "</div>" : "") +
+            "</div></div>"
+          )
+        }).join("")
+        const locked = BOOKED.map(
+          (b) =>
+            '<div class="td-item locked"><span class="td-check on">\u2713</span><div class="td-body"><div class="td-label">' +
+            b +
+            "</div></div></div>",
+        ).join("")
+        el.innerHTML =
+          '<div class="td-group">Still to book</div>' +
+          rows +
+          '<div class="td-group">Locked in</div>' +
+          locked
+      }
       function showTab(name) {
-        const itin = name !== "forecast"
+        const itin = name === "itinerary",
+          fc = name === "forecast",
+          td = name === "todo"
         document.getElementById("nav").style.display = itin ? "" : "none"
         document.getElementById("daysub").style.display = itin ? "" : "none"
         document.getElementById("panel").style.display = itin ? "" : "none"
-        document.getElementById("forecast").style.display = itin
-          ? "none"
-          : "block"
+        document.getElementById("forecast").style.display = fc
+          ? "block"
+          : "none"
+        document.getElementById("todo").style.display = td ? "block" : "none"
         document.getElementById("tab-itin").classList.toggle("active", itin)
-        document.getElementById("tab-fc").classList.toggle("active", !itin)
+        document.getElementById("tab-fc").classList.toggle("active", fc)
+        document.getElementById("tab-td").classList.toggle("active", td)
         if (itin) {
           setWx(TRIP[curIdx].iso)
         } else {
           document.getElementById("wx").style.display = "none"
-          renderForecast()
         }
+        if (fc) renderForecast()
+        if (td) renderTodo()
       }
       function render(idx) {
         const day = TRIP[idx]
@@ -1670,6 +1856,7 @@
       if (ap) ap.scrollIntoView({ inline: "center", block: "nearest" })
       document.getElementById("tab-itin").onclick = () => showTab("itinerary")
       document.getElementById("tab-fc").onclick = () => showTab("forecast")
+      document.getElementById("tab-td").onclick = () => showTab("todo")
       loadWx()
       if (todayIdx > -1) {
         setTimeout(() => {
