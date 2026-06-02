@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Chicago · June 4–8</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Archivo:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0e1620;
+        --ink2: #16212e;
+        --ink3: #1d2c3c;
+        --raise: #1b2a3a;
+        --sky: #5fb4e6;
+        --sky-bright: #86cdf2;
+        --sky-dim: #3a6f93;
+        --red: #e0434f;
+        --red-deep: #b8313c;
+        --cream: #ece6d8;
+        --dim: #8fa1b2;
+        --line: rgba(95, 180, 230, 0.18);
+        --line-soft: rgba(95, 180, 230, 0.09);
+        --disp: "Cinzel", Georgia, serif;
+        --body: "Archivo", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        font-family: var(--body);
+        color: var(--cream);
+        background: var(--ink);
+        background-image: radial-gradient(
+          125% 55% at 50% -8%,
+          rgba(95, 180, 230, 0.12),
+          transparent 60%
+        );
+        line-height: 1.55;
+        min-height: 100vh;
+        padding-bottom: 48px;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 580px;
+        margin: 0 auto;
+        padding: 0 18px;
+      }
+      .star {
+        display: inline-block;
+        vertical-align: middle;
+        fill: currentColor;
+      }
+      .s-xs {
+        width: 11px;
+        height: 11px;
+      }
+      .s-sm {
+        width: 14px;
+        height: 14px;
+      }
+      .s-md {
+        width: 20px;
+        height: 20px;
+      }
+
+      header {
+        text-align: center;
+        padding: 34px 0 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .ghost {
+        position: absolute;
+        top: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 230px;
+        height: 230px;
+        color: var(--sky);
+        opacity: 0.06;
+        z-index: 0;
+        pointer-events: none;
+      }
+      header > * {
+        position: relative;
+        z-index: 1;
+      }
+      .kicker {
+        font-size: 11px;
+        letter-spacing: 0.42em;
+        margin-right: -0.42em;
+        display: inline-block;
+        text-transform: uppercase;
+        color: var(--sky);
+        font-weight: 600;
+      }
+      h1 {
+        font-family: var(--disp);
+        font-weight: 700;
+        font-size: clamp(48px, 17vw, 82px);
+        line-height: 0.94;
+        letter-spacing: 0.04em;
+        margin: 6px 0 4px;
+      }
+      .dates {
+        font-size: 13px;
+        letter-spacing: 0.3em;
+        margin-right: -0.3em;
+        display: inline-block;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      .flagrule {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin: 18px auto 2px;
+        max-width: 340px;
+      }
+      .flagrule .bar {
+        height: 5px;
+        flex: 1;
+        background: var(--sky);
+        border-radius: 2px;
+        opacity: 0.85;
+      }
+      .flagrule .stars {
+        display: flex;
+        gap: 7px;
+        color: var(--red);
+      }
+      .status {
+        font-size: 14px;
+        color: var(--sky-bright);
+        letter-spacing: 0.06em;
+        margin-top: 12px;
+        min-height: 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: linear-gradient(var(--ink) 76%, transparent);
+        padding: 14px 0 12px;
+        margin-top: 6px;
+      }
+      .pills {
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding: 2px 18px;
+        max-width: 580px;
+        margin: 0 auto;
+      }
+      .pills::-webkit-scrollbar {
+        display: none;
+      }
+      .pills-row {
+        display: flex;
+        gap: 8px;
+        width: max-content;
+        margin: 0 auto;
+      }
+      .pill {
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        background: var(--ink2);
+        color: var(--dim);
+        border-radius: 11px;
+        padding: 9px 13px 8px;
+        text-align: center;
+        min-width: 60px;
+        cursor: pointer;
+        transition: 0.18s ease;
+        position: relative;
+      }
+      .pill .dow {
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        display: block;
+      }
+      .pill .dnum {
+        font-family: var(--disp);
+        font-size: 21px;
+        font-weight: 600;
+        line-height: 1;
+        margin-top: 3px;
+        display: block;
+      }
+      .pill.active {
+        background: var(--sky);
+        border-color: var(--sky);
+        color: #08131d;
+      }
+      .pill .pin {
+        position: absolute;
+        top: 5px;
+        right: 6px;
+        color: var(--red);
+      }
+      .pill.active .pin {
+        color: #08131d;
+      }
+
+      .daysub {
+        text-align: center;
+        font-family: var(--disp);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: var(--sky);
+        text-transform: uppercase;
+        margin: 8px 0 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .daysub .star {
+        color: var(--red);
+      }
+
+      .card {
+        background: var(--ink2);
+        border: 1px solid var(--line-soft);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        opacity: 0;
+        transform: translateY(8px);
+        animation: rise 0.42s ease forwards;
+      }
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .card.next {
+        border-color: var(--red);
+        background: var(--raise);
+        box-shadow: 0 0 0 1px rgba(224, 67, 79, 0.3);
+      }
+      .time {
+        font-family: var(--disp);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--sky-bright);
+        letter-spacing: 0.06em;
+        margin-bottom: 7px;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .time small {
+        font-family: var(--body);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      .title {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+      .place {
+        font-size: 13.5px;
+        color: var(--sky);
+        margin-top: 1px;
+      }
+      .who {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim);
+        margin-top: 5px;
+      }
+      .note {
+        font-size: 13.5px;
+        color: var(--dim);
+        margin-top: 8px;
+        line-height: 1.5;
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 11px;
+      }
+      .btn {
+        font-size: 12px;
+        color: var(--cream);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 5px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.15s;
+        cursor: pointer;
+        background: none;
+        font-family: var(--body);
+      }
+      .btn:hover {
+        border-color: var(--sky);
+        color: var(--sky-bright);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        vertical-align: middle;
+        margin-left: 8px;
+      }
+      .b-booked {
+        background: rgba(95, 180, 230, 0.14);
+        color: var(--sky-bright);
+        border: 1px solid rgba(95, 180, 230, 0.32);
+      }
+      .b-todo {
+        color: var(--red);
+        border: 1px solid rgba(224, 67, 79, 0.5);
+      }
+      .b-pick {
+        color: var(--sky-bright);
+        border: 1px solid rgba(95, 180, 230, 0.4);
+      }
+      .b-prop {
+        color: var(--dim);
+        border: 1px solid var(--line-soft);
+      }
+      .b-next {
+        background: var(--red);
+        color: #fff;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: var(--dim);
+        margin-top: 9px;
+        font-style: italic;
+      }
+      .opts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 9px;
+      }
+      .opt {
+        font-family: var(--body);
+        font-size: 13px;
+        color: var(--cream);
+        background: var(--ink3);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 7px 11px;
+        cursor: pointer;
+        transition: 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .opt:hover {
+        border-color: var(--sky);
+      }
+      .opt .star {
+        color: var(--red);
+      }
+      .opt.on {
+        background: var(--sky);
+        border-color: var(--sky);
+        color: #08131d;
+      }
+      .opt.on .star {
+        color: #08131d;
+      }
+      .det {
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.3s ease,
+          margin 0.3s ease;
+        margin-top: 0;
+      }
+      .det.show {
+        max-height: 340px;
+        margin-top: 11px;
+      }
+      .det-top {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--sky);
+        font-weight: 600;
+      }
+      .det-vibe {
+        font-size: 13.5px;
+        color: var(--cream);
+        margin-top: 6px;
+        line-height: 1.55;
+      }
+
+      .flag {
+        background: var(--ink2);
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--red);
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        margin: 24px 0 8px;
+      }
+      .flag h3 {
+        font-family: var(--disp);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--sky);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .flag h3 .star {
+        color: var(--red);
+      }
+      .flag p {
+        font-size: 13.5px;
+        color: var(--dim);
+      }
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      footer .star {
+        color: var(--red);
+        margin: 0 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol id="cs" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M12 1L14.2 8.19L21.53 6.5L16.4 12L21.53 17.5L14.2 15.81L12 23L9.8 15.81L2.47 17.5L7.6 12L2.47 6.5L9.8 8.19Z"
+        />
+      </symbol>
+    </svg>
+
+    <div class="wrap">
+      <header>
+        <svg class="ghost" aria-hidden="true"><use href="#cs" /></svg>
+        <div class="kicker">A Long Weekend In</div>
+        <h1>Chicago</h1>
+        <div class="dates">June 4 &ndash; 8, 2026</div>
+        <div class="flagrule">
+          <span class="bar"></span>
+          <span class="stars">
+            <svg class="star s-sm"><use href="#cs" /></svg>
+            <svg class="star s-sm"><use href="#cs" /></svg>
+            <svg class="star s-sm"><use href="#cs" /></svg>
+            <svg class="star s-sm"><use href="#cs" /></svg>
+          </span>
+          <span class="bar"></span>
+        </div>
+        <div class="status" id="status"></div>
+      </header>
+    </div>
+
+    <nav>
+      <div class="pills"><div class="pills-row" id="pills"></div></div>
+    </nav>
+
+    <div class="wrap">
+      <div class="daysub" id="daysub"></div>
+      <div id="panel"></div>
+
+      <footer>
+        Sean <svg class="star s-xs"><use href="#cs" /></svg> Alana
+        <svg class="star s-xs"><use href="#cs" /></svg> Cale
+      </footer>
+    </div>
+
+    <script>
+      const STAR = '<svg class="star s-xs"><use href="#cs"/></svg>'
+      const TRIP = [
+        {
+          dow: "Thursday",
+          short: "Thu",
+          dnum: "4",
+          iso: "2026-06-04",
+          sub: "Arrival &amp; deep dish",
+          items: [
+            {
+              t: "6:00",
+              ap: "AM",
+              m: 360,
+              title: "Fly SFO → ORD",
+              who: "All three",
+              note: "Depart SFO 6:00 AM PT, land O\u2019Hare 12:35 PM CT.",
+              status: "booked",
+            },
+            {
+              t: "12:35",
+              ap: "PM",
+              m: 755,
+              title: "Land + head downtown",
+              place: "O\u2019Hare → Congress Plaza",
+              who: "All three",
+              note: "~40-min ride to the hotel (or Blue Line to the Loop). Bag drop — check-in opens at 3 PM.",
+              status: "booked",
+            },
+            {
+              t: "3:00",
+              ap: "PM",
+              m: 900,
+              title: "Check in",
+              place: "Congress Plaza Hotel",
+              addr: "520 S Michigan Ave, Chicago, IL",
+              who: "All three",
+              note: "Conf #73333192835099. $25/night deposit + balance due at check-in.",
+              status: "booked",
+              phone: "+13124273800",
+            },
+            {
+              t: "Evening",
+              m: 1140,
+              title: "Deep-dish dinner",
+              place: "Lou Malnati's",
+              addr: "805 S State St, Chicago, IL",
+              who: "All three",
+              note: "Classic buttery-crust deep dish, ~7-min walk south. Bakes 30–45 min — call ahead or expect a wait.",
+              status: "todo",
+              phone: "+13127861000",
+            },
+          ],
+        },
+        {
+          dow: "Friday",
+          short: "Fri",
+          dnum: "5",
+          iso: "2026-06-05",
+          sub: "GO Fest &amp; jazz night",
+          items: [
+            {
+              t: "9:00",
+              ap: "AM",
+              m: 540,
+              title: "Pokémon GO Fest",
+              place: "Grant Park",
+              addr: "337 E Randolph St, Chicago, IL",
+              who: "Cale",
+              note: "~9 AM–6 PM. Fixed ~4-hr park session, then citywide play into the evening. Right across from the hotel.",
+              status: "booked",
+            },
+            {
+              t: "Daytime",
+              m: 660,
+              title: "Open day",
+              who: "Sean & Alana",
+              status: "pick",
+              options: [
+                {
+                  name: "Art Institute of Chicago",
+                  cuisine: "World-class art museum",
+                  price: "$$$",
+                  vibe: "One of the great museums — Monet, Van Gogh, American Gothic, Nighthawks. ~10-min walk on the edge of Grant Park (open Fri; closed Tue).",
+                  addr: "111 S Michigan Ave, Chicago, IL",
+                  phone: "+13124433600",
+                  pick: true,
+                },
+                {
+                  name: "Millennium Park & The Bean",
+                  cuisine: "Iconic park · free",
+                  price: "Free",
+                  vibe: "Cloud Gate\u2019s mirrored skyline, fountains and gardens — right across the park. The quintessential Chicago photo.",
+                  addr: "201 E Randolph St, Chicago, IL",
+                },
+                {
+                  name: "Riverwalk + Mag Mile",
+                  cuisine: "Stroll · shopping",
+                  price: "Free",
+                  vibe: "Walk the river under the bridges, then head up Michigan Ave for the shops and people-watching.",
+                  addr: "Chicago Riverwalk, Chicago, IL",
+                },
+                {
+                  name: "360 Chicago",
+                  cuisine: "Skyline views · sky lounge",
+                  price: "$$",
+                  vibe: "94th-floor views on the Mag Mile — brave the TILT, or just grab a drink at the Cloud Bar.",
+                  addr: "875 N Michigan Ave, Chicago, IL",
+                  phone: "+18888758439",
+                },
+              ],
+            },
+            {
+              t: "Evening",
+              m: 1140,
+              title: "Dinner before jazz",
+              who: "Sean & Alana",
+              status: "pick",
+              options: [
+                {
+                  name: "The Purple Pig",
+                  cuisine: "Mediterranean small plates",
+                  price: "$$",
+                  vibe: "Lively, shareable, Michelin-recognized. Easy ride down to jazz after.",
+                  addr: "444 N Michigan Ave, Chicago, IL",
+                  phone: "+13124641744",
+                  pick: true,
+                },
+                {
+                  name: "Gene & Georgetti",
+                  cuisine: "Old-school Italian-American",
+                  price: "$$$",
+                  vibe: "A 1941 classic — warm, romantic, unfussy red-sauce-meets-chophouse in River North.",
+                  addr: "500 N Franklin St, Chicago, IL",
+                  phone: "+13125273718",
+                },
+              ],
+            },
+            {
+              t: "~7:00",
+              ap: "PM",
+              m: 1200,
+              title: "Jazz date",
+              place: "Jazz Showcase",
+              addr: "806 S Plymouth Ct, Chicago, IL",
+              who: "Sean & Alana",
+              note: "Historic listening room (since 1947), ~10-min walk. Tickets ~$20–30 — cash at the door or card online. All ages with a parent, so Cale\u2019s welcome if he wants in.",
+              status: "todo",
+              phone: "+13123600234",
+            },
+          ],
+        },
+        {
+          dow: "Saturday",
+          short: "Sat",
+          dnum: "6",
+          iso: "2026-06-06",
+          sub: "Cruise, beef &amp; steak",
+          items: [
+            {
+              t: "9:45",
+              ap: "AM",
+              m: 585,
+              title: "Head to the dock",
+              place: "Rideshare or 18-min walk",
+              who: "All three",
+              note: "Arrive 20–30 min early.",
+              status: "prop",
+            },
+            {
+              t: "10:15",
+              ap: "AM",
+              m: 615,
+              title: "Architecture river cruise",
+              place: "Aboard the First Lady",
+              addr: "Michigan Ave Bridge at Wacker Dr, Chicago, IL",
+              who: "All three",
+              note: "Order #35-57046/CH7 · mobile tickets · ~1.5 hrs · outdoor decks. Bring a camera.",
+              status: "booked",
+            },
+            {
+              t: "12:00",
+              ap: "PM",
+              m: 720,
+              title: "Italian beef lunch",
+              place: "Mr. Beef on Orleans",
+              addr: "666 N Orleans St, Chicago, IL",
+              who: "All three",
+              note: 'The stand that inspired The Bear. Order it "hot & wet" — dipped in jus with spicy giardiniera. Cash is faster. Closed Sundays, so today\u2019s the day.',
+              status: "prop",
+              phone: "+13123378500",
+            },
+            {
+              t: "4:00",
+              ap: "PM",
+              m: 960,
+              title: "Malört at Rossi’s",
+              place: "Rossi's",
+              addr: "412 N State St, Chicago, IL",
+              who: "Sean & Alana (21+)",
+              note: "Classic downtown dive, cash only — but 21+, so this Chicago rite of passage is just the two of you. Cale can stay on GO Fest or grab a bite nearby; regroup for steak.",
+              status: "prop",
+              phone: "+13126445775",
+            },
+            {
+              t: "6:30",
+              ap: "PM",
+              m: 1110,
+              title: "Old-school steak",
+              who: "All three",
+              status: "pick",
+              options: [
+                {
+                  name: "Chicago Chop House",
+                  cuisine: "Classic chophouse",
+                  price: "$$$$",
+                  vibe: "Historic, white-tablecloth, walls of Chicago history. Closest to the River North cluster.",
+                  addr: "60 W Ontario St, Chicago, IL",
+                  phone: "+13127877100",
+                  pick: true,
+                },
+                {
+                  name: "Gibsons",
+                  cuisine: "The classic Chicago steakhouse",
+                  price: "$$$$",
+                  vibe: "Buzzy, big martinis, Gold Coast energy. A bit further north.",
+                  addr: "1028 N Rush St, Chicago, IL",
+                  phone: "+13122668999",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          dow: "Sunday",
+          short: "Sun",
+          dnum: "7",
+          iso: "2026-06-07",
+          sub: "Gangster tour &amp; the dog",
+          items: [
+            {
+              t: "Morning",
+              m: 600,
+              title: "Gangster bus tour",
+              place: "Untouchable Tours",
+              addr: "600 N Clark St, Chicago, IL",
+              who: "All three (TBD)",
+              note: "Pickup at Clark & Ohio. ~2 hrs · $38/person · stays on the bus. Sun departures 9 AM–1 PM — book a time slot.",
+              status: "todo",
+              phone: "+17738811195",
+            },
+            {
+              t: "Midday",
+              m: 780,
+              title: "Chicago dog",
+              who: "All three",
+              status: "pick",
+              options: [
+                {
+                  name: "Portillo's",
+                  cuisine: "Char dog · convenient",
+                  price: "$",
+                  vibe: "Right in River North by the tour. Reliable, great dog + the famous chocolate cake shake.",
+                  addr: "100 W Ontario St, Chicago, IL",
+                  phone: "+13125878910",
+                  pick: true,
+                },
+                {
+                  name: "The Wiener's Circle",
+                  cuisine: "Char dog · the experience",
+                  price: "$",
+                  vibe: "Lincoln Park institution — char dogs and famously sassy counter banter. A rite of passage.",
+                  addr: "2622 N Clark St, Chicago, IL",
+                  phone: "+17734777444",
+                },
+                {
+                  name: "Gene & Jude's",
+                  cuisine: "Purist depression dog",
+                  price: "$",
+                  vibe: "The legend — no ketchup ever, fries piled on top. Out near O\u2019Hare: ideal last-bite-before-departure.",
+                  addr: "2720 N River Rd, River Grove, IL",
+                  phone: "+17084527634",
+                },
+              ],
+            },
+            {
+              t: "Afternoon",
+              m: 900,
+              title: "Afternoon outing",
+              who: "All three (if Cale\u2019s free)",
+              status: "pick",
+              options: [
+                {
+                  name: "Skydeck at Willis Tower",
+                  cuisine: "103rd-floor views · The Ledge",
+                  price: "$$",
+                  vibe: "Step onto the glass Ledge boxes 1,353 ft up — the big Chicago thrill. Open late.",
+                  addr: "233 S Wacker Dr, Chicago, IL",
+                  phone: "+13128759447",
+                  pick: true,
+                },
+                {
+                  name: "Millennium Park & The Bean",
+                  cuisine: "Iconic park · free",
+                  price: "Free",
+                  vibe: "Cloud Gate\u2019s mirror, the fountains and gardens — right across from the hotel.",
+                  addr: "201 E Randolph St, Chicago, IL",
+                },
+                {
+                  name: "Field Museum",
+                  cuisine: "Natural history · Museum Campus",
+                  price: "$$$",
+                  vibe: "Meet Sue the T. rex plus mummies and gems on the lakefront. Closes 5 PM.",
+                  addr: "1400 S Lake Shore Dr, Chicago, IL",
+                  phone: "+13129229410",
+                },
+                {
+                  name: "Navy Pier",
+                  cuisine: "Lakefront fun · Ferris wheel",
+                  price: "Free entry",
+                  vibe: "The Centennial Wheel, boat rides and lake views — lively and easy to wander.",
+                  addr: "600 E Grand Ave, Chicago, IL",
+                  phone: "+13125957437",
+                },
+              ],
+            },
+            {
+              t: "Evening",
+              m: 1140,
+              title: "Classic Chicago dinner",
+              who: "All three",
+              status: "pick",
+              options: [
+                {
+                  name: "Twin Anchors",
+                  cuisine: "Ribs · Prohibition tavern",
+                  price: "$$",
+                  vibe: "Fall-off-the-bone baby backs in a 1930s tavern, Sinatra\u2019s old haunt. No reservations — grab the bar.",
+                  addr: "1655 N Sedgwick St, Chicago, IL",
+                  phone: "+13122661616",
+                  pick: true,
+                },
+                {
+                  name: "Tufano's Vernon Park Tap",
+                  cuisine: "Neighborhood Italian",
+                  price: "$$",
+                  vibe: "Cash-only Little Italy gem since 1930. Generous red-sauce plates, beloved meatballs, zero tourist sheen.",
+                  addr: "1073 W Vernon Park Pl, Chicago, IL",
+                  phone: "+13127333393",
+                },
+                {
+                  name: "The Berghoff",
+                  cuisine: "German-American landmark",
+                  price: "$$",
+                  vibe: "Chicago\u2019s oldest restaurant (1898), house beer, closest to the hotel. Closes 8 PM — an earlier dinner.",
+                  addr: "17 W Adams St, Chicago, IL",
+                  phone: "+13124273170",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          dow: "Monday",
+          short: "Mon",
+          dnum: "8",
+          iso: "2026-06-08",
+          sub: "Departure",
+          items: [
+            {
+              t: "Morning",
+              m: 540,
+              title: "Pack + last stroll",
+              place: "Near the hotel",
+              who: "All three",
+              note: "Grab any last Michigan Ave / lakefront moments before checkout.",
+              status: "prop",
+            },
+            {
+              t: "12:00",
+              ap: "PM",
+              m: 720,
+              title: "Check out",
+              place: "Congress Plaza Hotel",
+              addr: "520 S Michigan Ave, Chicago, IL",
+              who: "All three",
+              note: "By noon. Stash bags at the front desk to keep the afternoon free.",
+              status: "booked",
+              phone: "+13124273800",
+            },
+            {
+              t: "~3:00",
+              ap: "PM",
+              m: 900,
+              title: "Head to O\u2019Hare",
+              place: "Gene & Jude\u2019s on the way",
+              who: "All three",
+              note: "Leave downtown ~3 PM for the 5:22 flight (~40-min ride). Gene & Jude\u2019s in River Grove sits right by ORD — the perfect farewell Chicago dog.",
+              status: "prop",
+              phone: "+17084527634",
+            },
+            {
+              t: "5:22",
+              ap: "PM",
+              m: 1042,
+              title: "Fly ORD → SFO",
+              who: "All three",
+              note: "Depart O\u2019Hare 5:22 PM CT, land SFO 8:13 PM PT.",
+              status: "booked",
+            },
+          ],
+        },
+      ]
+      const STAT = {
+        booked: ["Booked", "b-booked"],
+        todo: ["To book", "b-todo"],
+        pick: ["Pick one", "b-pick"],
+        prop: ["Optional", "b-prop"],
+      }
+      const OPTS = {}
+      const now = new Date()
+      const todayISO =
+        now.getFullYear() +
+        "-" +
+        String(now.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(now.getDate()).padStart(2, "0")
+      const nowMin = now.getHours() * 60 + now.getMinutes()
+      const todayIdx = TRIP.findIndex((d) => d.iso === todayISO)
+      function mapsURL(a) {
+        return "https://maps.google.com/?q=" + encodeURIComponent(a)
+      }
+
+      function setStatus() {
+        const el = document.getElementById("status")
+        if (todayIdx > -1) {
+          el.innerHTML =
+            STAR + "Today · Day " + (todayIdx + 1) + " · " + TRIP[todayIdx].dow
+          return
+        }
+        const start = new Date(2026, 5, 4),
+          t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const diff = Math.round((start - t0) / 86400000)
+        if (diff > 0)
+          el.innerHTML =
+            STAR + diff + (diff === 1 ? " day to go" : " days to go")
+        else el.innerHTML = STAR + "That’s a wrap — hope it was a blast."
+      }
+      function nextIdxFor(day) {
+        if (day.iso !== todayISO) return -1
+        for (let i = 0; i < day.items.length; i++) {
+          if (typeof day.items[i].m === "number" && day.items[i].m >= nowMin)
+            return i
+        }
+        return -1
+      }
+      function pick(id, oi) {
+        const o = OPTS[id][oi]
+        document
+          .querySelectorAll('[id^="' + id + '-opt"]')
+          .forEach((b) => b.classList.remove("on"))
+        const chip = document.getElementById(id + "-opt" + oi)
+        if (chip) chip.classList.add("on")
+        let meta = ""
+        if (o.addr)
+          meta +=
+            '<a class="btn" target="_blank" rel="noopener" href="' +
+            mapsURL(o.addr) +
+            '">&#9906; Map</a>'
+        if (o.phone)
+          meta += '<a class="btn" href="tel:' + o.phone + '">&#9742; Call</a>'
+        const d = document.getElementById("det-" + id)
+        d.innerHTML =
+          '<div class="det-top">' +
+          o.cuisine +
+          " &middot; " +
+          o.price +
+          '</div><div class="det-vibe">' +
+          o.vibe +
+          "</div>" +
+          (meta ? '<div class="meta">' + meta + "</div>" : "")
+        d.classList.add("show")
+      }
+
+      function render(idx) {
+        const day = TRIP[idx]
+        document
+          .querySelectorAll(".pill")
+          .forEach((p, i) => p.classList.toggle("active", i === idx))
+        document.getElementById("daysub").innerHTML =
+          '<svg class="star s-sm"><use href="#cs"/></svg> ' +
+          day.dow +
+          " &middot; June " +
+          day.dnum +
+          ' <svg class="star s-sm"><use href="#cs"/></svg>'
+        const nx = nextIdxFor(day)
+        const toOpen = []
+        document.getElementById("panel").innerHTML = day.items
+          .map((it, i) => {
+            const isNext = i === nx
+            const s = STAT[it.status]
+            const badge = isNext
+              ? '<span class="badge b-next">' + STAR + "Up next</span>"
+              : '<span class="badge ' +
+                s[1] +
+                '">' +
+                (it.status === "pick" ? STAR : "") +
+                s[0] +
+                "</span>"
+            let body
+            if (it.options) {
+              const id = "d" + idx + "i" + i
+              OPTS[id] = it.options
+              let pi = it.options.findIndex((o) => o.pick)
+              if (pi < 0) pi = 0
+              toOpen.push([id, pi])
+              const chips = it.options
+                .map(
+                  (o, oi) =>
+                    '<button class="opt" id="' +
+                    id +
+                    "-opt" +
+                    oi +
+                    '" onclick="pick(\'' +
+                    id +
+                    "'," +
+                    oi +
+                    ')">' +
+                    (o.pick ? STAR : "") +
+                    o.name +
+                    "</button>",
+                )
+                .join("")
+              body =
+                '<div class="title">' +
+                it.title +
+                badge +
+                '</div><div class="who">' +
+                it.who +
+                "</div>" +
+                '<div class="hint">Tap an option for the vibe, cuisine &amp; price</div>' +
+                '<div class="opts">' +
+                chips +
+                '</div><div class="det" id="det-' +
+                id +
+                '"></div>'
+            } else {
+              let meta = ""
+              if (it.addr)
+                meta +=
+                  '<a class="btn" target="_blank" rel="noopener" href="' +
+                  mapsURL(it.addr) +
+                  '">&#9906; Map</a>'
+              if (it.phone)
+                meta +=
+                  '<a class="btn" href="tel:' + it.phone + '">&#9742; Call</a>'
+              body =
+                '<div class="title">' +
+                it.title +
+                badge +
+                "</div>" +
+                (it.place ? '<div class="place">' + it.place + "</div>" : "") +
+                '<div class="who">' +
+                it.who +
+                "</div>" +
+                (it.note ? '<div class="note">' + it.note + "</div>" : "") +
+                (meta ? '<div class="meta">' + meta + "</div>" : "")
+            }
+            return (
+              '<div class="card' +
+              (isNext ? " next" : "") +
+              '" style="animation-delay:' +
+              i * 55 +
+              'ms"><div class="time">' +
+              it.t +
+              (it.ap ? "<small>" + it.ap + "</small>" : "") +
+              "</div>" +
+              body +
+              "</div>"
+            )
+          })
+          .join("")
+        toOpen.forEach((p) => pick(p[0], p[1]))
+      }
+
+      const pills = document.getElementById("pills")
+      TRIP.forEach((d, i) => {
+        const b = document.createElement("button")
+        b.className = "pill" + (d.iso === todayISO ? " today" : "")
+        b.innerHTML =
+          '<span class="dow">' +
+          d.short +
+          '</span><span class="dnum">' +
+          d.dnum +
+          "</span>" +
+          (d.iso === todayISO
+            ? '<svg class="star s-xs pin"><use href="#cs"/></svg>'
+            : "")
+        b.onclick = () => render(i)
+        pills.appendChild(b)
+      })
+      setStatus()
+      const startIdx =
+        todayIdx > -1
+          ? todayIdx
+          : now > new Date(2026, 5, 8, 23, 59)
+            ? TRIP.length - 1
+            : 0
+      render(startIdx)
+      const ap = pills.children[startIdx]
+      if (ap) ap.scrollIntoView({ inline: "center", block: "nearest" })
+      if (todayIdx > -1) {
+        setTimeout(() => {
+          const n = document.querySelector(".card.next")
+          if (n) n.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, 400)
+      }
+    </script>
+  </body>
+</html>
