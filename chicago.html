@@ -262,6 +262,121 @@
       .wx .wxp {
         color: var(--dim);
       }
+      .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 4px 0 2px;
+      }
+      .tab {
+        font-family: var(--disp);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--dim);
+        background: none;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .tab.active {
+        background: var(--sky);
+        border-color: var(--sky);
+        color: #08131d;
+      }
+      .fc-note {
+        text-align: center;
+        font-size: 12.5px;
+        color: var(--dim);
+        font-style: italic;
+        margin: 6px 0 14px;
+      }
+      .fc-card {
+        background: var(--ink2);
+        border: 1px solid var(--line-soft);
+        border-radius: 14px;
+        padding: 15px 16px;
+        margin-bottom: 12px;
+      }
+      .fc-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .fc-day {
+        font-family: var(--disp);
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--cream);
+        letter-spacing: 0.04em;
+      }
+      .fc-date {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--sky);
+        margin-top: 3px;
+      }
+      .fc-ic {
+        color: var(--sky);
+      }
+      .fc-ic .wxi {
+        width: 34px;
+        height: 34px;
+      }
+      .fc-main {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .fc-temp {
+        font-family: var(--disp);
+        font-size: 30px;
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1;
+      }
+      .fc-temp .lo {
+        font-size: 18px;
+        color: var(--dim);
+        font-weight: 600;
+      }
+      .fc-cond {
+        font-size: 13px;
+        color: var(--sky-bright);
+      }
+      .fc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px 14px;
+        margin-top: 14px;
+        padding-top: 13px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .fc-grid .cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .fc-grid .lbl {
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      .fc-grid .val {
+        font-size: 14px;
+        color: var(--cream);
+      }
+      .fc-na {
+        font-size: 13px;
+        color: var(--dim);
+        margin-top: 8px;
+      }
       .daysub .star {
         color: var(--red);
       }
@@ -532,7 +647,14 @@
       </header>
     </div>
 
-    <nav>
+    <div class="wrap">
+      <div class="tabs" id="tabs">
+        <button class="tab active" id="tab-itin">Itinerary</button>
+        <button class="tab" id="tab-fc">Forecast</button>
+      </div>
+    </div>
+
+    <nav id="nav">
       <div class="pills"><div class="pills-row" id="pills"></div></div>
     </nav>
 
@@ -540,6 +662,7 @@
       <div class="daysub" id="daysub"></div>
       <div class="wx" id="wx"></div>
       <div id="panel"></div>
+      <div id="forecast" style="display: none"></div>
 
       <footer>
         Sean <svg class="star s-xs"><use href="#cs" /></svg> Alana
@@ -1271,32 +1394,150 @@
               "% rain</span>"
             : "")
       }
+      let wxLoaded = false,
+        wxFailed = false
       function loadWx() {
         const s = TRIP[0].iso,
           e = TRIP[TRIP.length - 1].iso
         const url =
-          "https://api.open-meteo.com/v1/forecast?latitude=41.8781&longitude=-87.6298&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&timezone=America%2FChicago&start_date=" +
+          "https://api.open-meteo.com/v1/forecast?latitude=41.8781&longitude=-87.6298&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&start_date=" +
           s +
           "&end_date=" +
           e
         fetch(url)
           .then((r) => r.json())
           .then((d) => {
-            if (!d || !d.daily || !d.daily.time) return
-            const t = d.daily.time
+            if (!d || !d.daily || !d.daily.time) {
+              wxFailed = true
+              renderForecast()
+              return
+            }
+            const D = d.daily,
+              t = D.time
             for (let i = 0; i < t.length; i++) {
               WX[t[i]] = {
-                code: d.daily.weather_code[i],
-                hi: Math.round(d.daily.temperature_2m_max[i]),
-                lo: Math.round(d.daily.temperature_2m_min[i]),
-                pop: d.daily.precipitation_probability_max
-                  ? d.daily.precipitation_probability_max[i]
+                code: D.weather_code[i],
+                hi: Math.round(D.temperature_2m_max[i]),
+                lo: Math.round(D.temperature_2m_min[i]),
+                feelsHi: Math.round(D.apparent_temperature_max[i]),
+                feelsLo: Math.round(D.apparent_temperature_min[i]),
+                pop: D.precipitation_probability_max
+                  ? D.precipitation_probability_max[i]
                   : null,
+                precip: D.precipitation_sum ? D.precipitation_sum[i] : null,
+                wind: D.wind_speed_10m_max
+                  ? Math.round(D.wind_speed_10m_max[i])
+                  : null,
+                uv:
+                  D.uv_index_max && D.uv_index_max[i] != null
+                    ? D.uv_index_max[i]
+                    : null,
+                sunrise: D.sunrise ? D.sunrise[i] : null,
+                sunset: D.sunset ? D.sunset[i] : null,
               }
             }
+            wxLoaded = true
             setWx(TRIP[curIdx].iso)
+            renderForecast()
           })
-          .catch(() => {})
+          .catch(() => {
+            wxFailed = true
+            renderForecast()
+          })
+      }
+      function fmtTime(iso) {
+        if (!iso) return "—"
+        const tm = (iso.split("T")[1] || "").slice(0, 5)
+        if (!tm) return "—"
+        let h = parseInt(tm.slice(0, 2), 10)
+        const m = tm.slice(3, 5)
+        const ap = h >= 12 ? "PM" : "AM"
+        h = h % 12
+        if (h === 0) h = 12
+        return h + ":" + m + " " + ap
+      }
+      function renderForecast() {
+        const el = document.getElementById("forecast")
+        if (!el) return
+        let note = ""
+        if (!wxLoaded)
+          note =
+            '<div class="fc-note">' +
+            (wxFailed
+              ? "Live forecast couldn’t load in this view — it fills in on the deployed site."
+              : "Loading the latest forecast…") +
+            "</div>"
+        const cards = TRIP.map((day) => {
+          const w = WX[day.iso]
+          const head =
+            '<div class="fc-head"><div><div class="fc-day">' +
+            day.dow +
+            '</div><div class="fc-date">June ' +
+            day.dnum +
+            "</div></div>"
+          if (!w)
+            return (
+              '<div class="fc-card">' +
+              head +
+              '<div class="fc-ic" style="opacity:.35">' +
+              WXI.cloud +
+              '</div></div><div class="fc-na">Forecast not in range yet for this date.</div></div>'
+            )
+          const ic = wxFor(w.code)
+          const stats = [
+            ["Feels like", w.feelsHi + "° / " + w.feelsLo + "°"],
+            ["Rain chance", w.pop != null ? w.pop + "%" : "—"],
+            ["Precip", w.precip != null ? w.precip.toFixed(2) + " in" : "—"],
+            ["Wind", w.wind != null ? w.wind + " mph" : "—"],
+            ["UV index", w.uv != null ? Math.round(w.uv) : "—"],
+            ["Sun", fmtTime(w.sunrise) + " – " + fmtTime(w.sunset)],
+          ]
+          const grid = stats
+            .map(
+              (s) =>
+                '<div class="cell"><span class="lbl">' +
+                s[0] +
+                '</span><span class="val">' +
+                s[1] +
+                "</span></div>",
+            )
+            .join("")
+          return (
+            '<div class="fc-card">' +
+            head +
+            '<div class="fc-ic">' +
+            ic[0] +
+            "</div></div>" +
+            '<div class="fc-main"><div class="fc-temp">' +
+            w.hi +
+            '°<span class="lo"> / ' +
+            w.lo +
+            '°</span></div><div class="fc-cond">' +
+            ic[1] +
+            "</div></div>" +
+            '<div class="fc-grid">' +
+            grid +
+            "</div></div>"
+          )
+        }).join("")
+        el.innerHTML = note + cards
+      }
+      function showTab(name) {
+        const itin = name !== "forecast"
+        document.getElementById("nav").style.display = itin ? "" : "none"
+        document.getElementById("daysub").style.display = itin ? "" : "none"
+        document.getElementById("panel").style.display = itin ? "" : "none"
+        document.getElementById("forecast").style.display = itin
+          ? "none"
+          : "block"
+        document.getElementById("tab-itin").classList.toggle("active", itin)
+        document.getElementById("tab-fc").classList.toggle("active", !itin)
+        if (itin) {
+          setWx(TRIP[curIdx].iso)
+        } else {
+          document.getElementById("wx").style.display = "none"
+          renderForecast()
+        }
       }
       function render(idx) {
         const day = TRIP[idx]
@@ -1427,6 +1668,8 @@
       render(startIdx)
       const ap = pills.children[startIdx]
       if (ap) ap.scrollIntoView({ inline: "center", block: "nearest" })
+      document.getElementById("tab-itin").onclick = () => showTab("itinerary")
+      document.getElementById("tab-fc").onclick = () => showTab("forecast")
       loadWx()
       if (todayIdx > -1) {
         setTimeout(() => {
