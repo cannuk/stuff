@@ -75,6 +75,13 @@
         width: 20px;
         height: 20px;
       }
+      .spark {
+        display: inline-block;
+        vertical-align: middle;
+        fill: currentColor;
+        width: 12px;
+        height: 12px;
+      }
 
       header {
         text-align: center;
@@ -478,6 +485,12 @@
           d="M12 1L14.2 8.19L21.53 6.5L16.4 12L21.53 17.5L14.2 15.81L12 23L9.8 15.81L2.47 17.5L7.6 12L2.47 6.5L9.8 8.19Z"
         />
       </symbol>
+      <symbol id="spark" viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M12 0C12.6 6.5 13.5 10.4 24 12C13.5 13.6 12.6 17.5 12 24C11.4 17.5 10.5 13.6 0 12C10.5 10.4 11.4 6.5 12 0Z"
+        />
+      </symbol>
     </svg>
 
     <div class="wrap">
@@ -511,6 +524,7 @@
       <footer>
         Sean <svg class="star s-xs"><use href="#cs" /></svg> Alana
         <svg class="star s-xs"><use href="#cs" /></svg> Cale
+        <svg class="spark" style="color: var(--sky)"><use href="#spark" /></svg>
       </footer>
     </div>
 
@@ -579,11 +593,12 @@
               t: "9:00",
               ap: "AM",
               m: 540,
-              title: "Pokémon GO Fest",
+              title:
+                'Pokémon GO Fest <svg class="spark" style="color:var(--sky)"><use href="#spark"/></svg>',
               place: "Grant Park",
               addr: "337 E Randolph St, Chicago, IL",
               who: "Cale",
-              note: "~9 AM–6 PM. Fixed ~4-hr park session, then citywide play into the evening. Right across from the hotel.",
+              note: '~9 AM–6 PM. Fixed ~4-hr park session, then citywide play into the evening. Right across from the hotel. <span style="color:var(--sky-bright)">Cale\u2019s catching day — happy hunting out there <svg class="spark" style="color:var(--red)"><use href="#spark"/></svg></span>',
               status: "booked",
             },
             {
