@@ -88,12 +88,7 @@
         padding: 34px 0 16px;
         position: relative;
         overflow: hidden;
-        max-height: 480px;
-        transition:
-          max-height 0.4s ease,
-          opacity 0.32s ease,
-          padding 0.4s ease,
-          transform 0.4s ease;
+        will-change: opacity;
       }
       .ghost {
         position: absolute;
@@ -111,22 +106,13 @@
         position: relative;
         z-index: 1;
       }
-      body.collapsed header {
-        max-height: 0;
-        opacity: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        transform: translateY(-14px);
-        pointer-events: none;
-      }
       #topbar {
         position: sticky;
         top: 0;
         z-index: 20;
         background: var(--ink);
-        transition: box-shadow 0.3s ease;
       }
-      body.collapsed #topbar {
+      #topbar.stuck {
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         border-bottom: 1px solid var(--line-soft);
       }
@@ -138,24 +124,15 @@
         max-height: 0;
         opacity: 0;
         overflow: hidden;
-        transition:
-          max-height 0.35s ease,
-          opacity 0.3s ease,
-          padding 0.35s ease;
         color: var(--red);
       }
       .brand span {
         font-family: var(--disp);
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 700;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--cream);
-      }
-      body.collapsed .brand {
-        max-height: 40px;
-        opacity: 1;
-        padding: 11px 0 3px;
       }
       .kicker {
         font-size: 11px;
@@ -216,7 +193,7 @@
       }
 
       nav {
-        padding: 12px 0 12px;
+        padding: 8px 0 10px;
       }
       .pills {
         overflow-x: auto;
@@ -239,10 +216,10 @@
         border: 1px solid var(--line);
         background: var(--ink2);
         color: var(--dim);
-        border-radius: 11px;
-        padding: 9px 13px 8px;
+        border-radius: 10px;
+        padding: 5px 11px 4px;
         text-align: center;
-        min-width: 60px;
+        min-width: 54px;
         cursor: pointer;
         transition: 0.18s ease;
         position: relative;
@@ -255,10 +232,10 @@
       }
       .pill .dnum {
         font-family: var(--disp);
-        font-size: 21px;
+        font-size: 18px;
         font-weight: 600;
         line-height: 1;
-        margin-top: 3px;
+        margin-top: 1px;
         display: block;
       }
       .pill.active {
@@ -284,7 +261,7 @@
         letter-spacing: 0.14em;
         color: var(--sky);
         text-transform: uppercase;
-        margin: 8px 0 18px;
+        margin: 6px 0 14px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -313,20 +290,20 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
-        margin: 4px 0 2px;
+        gap: 7px;
+        margin: 2px 0 2px;
       }
       .tab {
         font-family: var(--disp);
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--dim);
         background: none;
         border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 8px 16px;
+        border-radius: 9px;
+        padding: 6px 13px;
         cursor: pointer;
         transition: 0.15s;
       }
@@ -1960,18 +1937,35 @@
       document.getElementById("tab-fc").onclick = () => showTab("forecast")
       document.getElementById("tab-td").onclick = () => showTab("todo")
       loadWx()
+      const _hdr = document.querySelector("header"),
+        _brand = document.getElementById("brand"),
+        _topbar = document.getElementById("topbar")
+      let _collapseDist = Math.max(120, _hdr ? _hdr.offsetHeight : 220)
+      window.addEventListener("resize", function () {
+        if (_hdr) _collapseDist = Math.max(120, _hdr.offsetHeight)
+      })
       let _scrollTick = false
+      function applyCollapse() {
+        const y = window.scrollY || window.pageYOffset || 0
+        const p = Math.min(1, Math.max(0, y / _collapseDist))
+        if (_hdr) _hdr.style.opacity = String(1 - p)
+        if (_brand) {
+          _brand.style.opacity = String(p)
+          _brand.style.maxHeight = 30 * p + "px"
+          _brand.style.paddingTop = 8 * p + "px"
+          _brand.style.paddingBottom = 2 * p + "px"
+        }
+        if (_topbar) _topbar.classList.toggle("stuck", y > 4)
+        _scrollTick = false
+      }
       function onScrollCollapse() {
         if (!_scrollTick) {
-          requestAnimationFrame(function () {
-            document.body.classList.toggle("collapsed", window.scrollY > 56)
-            _scrollTick = false
-          })
           _scrollTick = true
+          requestAnimationFrame(applyCollapse)
         }
       }
       window.addEventListener("scroll", onScrollCollapse, { passive: true })
-      onScrollCollapse()
+      applyCollapse()
       if (todayIdx > -1) {
         setTimeout(() => {
           const n = document.querySelector(".card.next")
