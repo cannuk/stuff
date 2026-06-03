@@ -88,6 +88,12 @@
         padding: 34px 0 16px;
         position: relative;
         overflow: hidden;
+        max-height: 480px;
+        transition:
+          max-height 0.4s ease,
+          opacity 0.32s ease,
+          padding 0.4s ease,
+          transform 0.4s ease;
       }
       .ghost {
         position: absolute;
@@ -104,6 +110,52 @@
       header > * {
         position: relative;
         z-index: 1;
+      }
+      body.collapsed header {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        transform: translateY(-14px);
+        pointer-events: none;
+      }
+      #topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: var(--ink);
+        transition: box-shadow 0.3s ease;
+      }
+      body.collapsed #topbar {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.35s ease,
+          opacity 0.3s ease,
+          padding 0.35s ease;
+        color: var(--red);
+      }
+      .brand span {
+        font-family: var(--disp);
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--cream);
+      }
+      body.collapsed .brand {
+        max-height: 40px;
+        opacity: 1;
+        padding: 11px 0 3px;
       }
       .kicker {
         font-size: 11px;
@@ -164,12 +216,7 @@
       }
 
       nav {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: linear-gradient(var(--ink) 76%, transparent);
-        padding: 14px 0 12px;
-        margin-top: 6px;
+        padding: 12px 0 12px;
       }
       .pills {
         overflow-x: auto;
@@ -718,17 +765,22 @@
       </header>
     </div>
 
-    <div class="wrap">
-      <div class="tabs" id="tabs">
-        <button class="tab active" id="tab-itin">Itinerary</button>
-        <button class="tab" id="tab-fc">Forecast</button>
-        <button class="tab" id="tab-td">To Book</button>
+    <div id="topbar">
+      <div class="brand" id="brand">
+        <svg class="star s-xs"><use href="#cs" /></svg><span>Chicago</span
+        ><svg class="star s-xs"><use href="#cs" /></svg>
       </div>
+      <div class="wrap">
+        <div class="tabs" id="tabs">
+          <button class="tab active" id="tab-itin">Itinerary</button>
+          <button class="tab" id="tab-fc">Forecast</button>
+          <button class="tab" id="tab-td">To Book</button>
+        </div>
+      </div>
+      <nav id="nav">
+        <div class="pills"><div class="pills-row" id="pills"></div></div>
+      </nav>
     </div>
-
-    <nav id="nav">
-      <div class="pills"><div class="pills-row" id="pills"></div></div>
-    </nav>
 
     <div class="wrap">
       <div class="daysub" id="daysub"></div>
@@ -1908,6 +1960,18 @@
       document.getElementById("tab-fc").onclick = () => showTab("forecast")
       document.getElementById("tab-td").onclick = () => showTab("todo")
       loadWx()
+      let _scrollTick = false
+      function onScrollCollapse() {
+        if (!_scrollTick) {
+          requestAnimationFrame(function () {
+            document.body.classList.toggle("collapsed", window.scrollY > 56)
+            _scrollTick = false
+          })
+          _scrollTick = true
+        }
+      }
+      window.addEventListener("scroll", onScrollCollapse, { passive: true })
+      onScrollCollapse()
       if (todayIdx > -1) {
         setTimeout(() => {
           const n = document.querySelector(".card.next")
