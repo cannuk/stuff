@@ -38,16 +38,19 @@
       }
       html {
         -webkit-text-size-adjust: 100%;
+        background: var(--ink);
       }
       body {
         font-family: var(--body);
         color: var(--cream);
-        background: var(--ink);
+        background-color: var(--ink);
         background-image: radial-gradient(
-          125% 55% at 50% -8%,
+          125% 100vh at 50% -40px,
           rgba(95, 180, 230, 0.12),
           transparent 60%
         );
+        background-attachment: fixed;
+        background-repeat: no-repeat;
         line-height: 1.55;
         min-height: 100vh;
         padding-bottom: 48px;
@@ -57,6 +60,9 @@
         max-width: 580px;
         margin: 0 auto;
         padding: 0 18px;
+      }
+      #content {
+        padding-top: 8px;
       }
       .star {
         display: inline-block;
@@ -110,7 +116,15 @@
         position: sticky;
         top: 0;
         z-index: 20;
-        background: var(--ink);
+        background-color: var(--ink);
+        background-image: radial-gradient(
+          125% 100vh at 50% -40px,
+          rgba(95, 180, 230, 0.12),
+          transparent 60%
+        );
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        padding-bottom: 10px;
       }
       #topbar.stuck {
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
@@ -193,7 +207,7 @@
       }
 
       nav {
-        padding: 8px 0 10px;
+        padding: 10px 0 0;
       }
       .pills {
         overflow-x: auto;
@@ -291,7 +305,7 @@
         flex-wrap: wrap;
         justify-content: center;
         gap: 7px;
-        margin: 2px 0 2px;
+        margin: 2px 0 0;
       }
       .tab {
         font-family: var(--disp);
@@ -317,7 +331,10 @@
         font-size: 12.5px;
         color: var(--dim);
         font-style: italic;
-        margin: 6px 0 14px;
+        margin: 14px 0 0;
+      }
+      #forecast .fc-card:first-child {
+        margin-top: 6px;
       }
       .fc-card {
         background: var(--ink2);
@@ -496,6 +513,18 @@
         border-color: var(--red);
         background: var(--raise);
         box-shadow: 0 0 0 1px rgba(224, 67, 79, 0.3);
+      }
+      @keyframes risePast {
+        to {
+          opacity: 0.5;
+          transform: none;
+        }
+      }
+      .card.past {
+        animation-name: risePast;
+      }
+      .card.past .time {
+        color: var(--dim);
       }
       .time {
         font-family: var(--disp);
@@ -759,7 +788,7 @@
       </nav>
     </div>
 
-    <div class="wrap">
+    <div class="wrap" id="content">
       <div class="daysub" id="daysub"></div>
       <div class="wx" id="wx"></div>
       <div id="panel"></div>
@@ -1452,13 +1481,23 @@
             STAR + diff + (diff === 1 ? " day to go" : " days to go")
         else el.innerHTML = STAR + "That’s a wrap — hope it was a blast."
       }
-      function nextIdxFor(day) {
-        if (day.iso !== todayISO) return -1
+      function dayFocus(day) {
+        if (day.iso < todayISO)
+          return { focal: -1, started: false, allPast: true }
+        if (day.iso !== todayISO)
+          return { focal: -1, started: false, allPast: false }
+        let last = -1
         for (let i = 0; i < day.items.length; i++) {
-          if (typeof day.items[i].m === "number" && day.items[i].m >= nowMin)
-            return i
+          const mm = day.items[i].m
+          if (typeof mm === "number" && mm <= nowMin) last = i
         }
-        return -1
+        if (last === -1)
+          return {
+            focal: day.items.length ? 0 : -1,
+            started: false,
+            allPast: false,
+          }
+        return { focal: last, started: true, allPast: false }
       }
       function pick(id, oi) {
         const o = OPTS[id][oi]
@@ -1667,7 +1706,7 @@
             "</div></div>"
           )
         }).join("")
-        el.innerHTML = note + cards
+        el.innerHTML = cards + note
       }
       const TODO = [
         {
@@ -1777,7 +1816,10 @@
           '<div class="td-group">Locked in</div>' +
           locked
       }
+      let _curTab = "itinerary"
       function showTab(name) {
+        const wasCollapsed =
+          (window.scrollY || window.pageYOffset || 0) >= _collapseDist - 1
         const itin = name === "itinerary",
           fc = name === "forecast",
           td = name === "todo"
@@ -1798,6 +1840,9 @@
         }
         if (fc) renderForecast()
         if (td) renderTodo()
+        _curTab = name
+        window.scrollTo(0, wasCollapsed ? _collapseDist : 0)
+        applyCollapse()
       }
       function render(idx) {
         const day = TRIP[idx]
@@ -1811,14 +1856,18 @@
           " &middot; June " +
           day.dnum +
           ' <svg class="star s-sm"><use href="#cs"/></svg>'
-        const nx = nextIdxFor(day)
+        const F = dayFocus(day)
         const toOpen = []
         document.getElementById("panel").innerHTML = day.items
           .map((it, i) => {
-            const isNext = i === nx
+            const isNext = i === F.focal
+            const isPast = F.allPast || (F.focal > -1 && i < F.focal)
             const s = STAT[it.status]
             const badge = isNext
-              ? '<span class="badge b-next">' + STAR + "Up next</span>"
+              ? '<span class="badge b-next">' +
+                STAR +
+                (F.started ? "Now" : "Up next") +
+                "</span>"
               : '<span class="badge ' +
                 s[1] +
                 '">' +
@@ -1892,6 +1941,7 @@
             return (
               '<div class="card' +
               (isNext ? " next" : "") +
+              (isPast ? " past" : "") +
               '" style="animation-delay:' +
               i * 55 +
               'ms"><div class="time">' +
