@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F2A2E">
+<title>Monterey for Two</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: phone-first field guide. A Lone Cypress hero that scrolls away under a sticky tab/day bar; one column of stop cards over a bay-fog glow. */
+:root{
+  --bg:#E8EFEE;          /* coastal fog */
+  --surface:#FFFFFF;
+  --ink:#0F2A2E;         /* deep bay */
+  --dim:#5A7073;
+  --line:#CFDCDB;
+  --accent:#1D6B66;      /* bay teal */
+  --accent-soft:#D5E8E5;
+  --cypress:#2F5340;     /* Monterey cypress */
+  --warn:#B4492E;        /* abalone / timeshare alarm */
+  --warn-soft:#F6E2DA;
+  --gold:#A87C17;        /* suggested pick */
+  --glow:#CFE3E6;        /* fog bank behind the hero */
+  --sun:#E39A5B;
+  --display:"Gloock", Georgia, "Times New Roman", serif;
+  --body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0A1A1D;--surface:#11262A;--ink:#E1EDEB;--dim:#8EA6A6;--line:#223A3D;
+  --accent:#6CC5BC;--accent-soft:#173A38;--cypress:#8FBF9E;--warn:#F08B6D;--warn-soft:#3A221B;--gold:#E2BC5C;--glow:#163B42;--sun:#E7A06A;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1A1D;--surface:#11262A;--ink:#E1EDEB;--dim:#8EA6A6;--line:#223A3D;
+  --accent:#6CC5BC;--accent-soft:#173A38;--cypress:#8FBF9E;--warn:#F08B6D;--warn-soft:#3A221B;--gold:#E2BC5C;--glow:#163B42;--sun:#E7A06A;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:15px;line-height:1.5;color:var(--ink);
+  background:radial-gradient(ellipse 140% 100vh at 50% -20vh,var(--glow),transparent 70%) no-repeat,var(--bg);background-attachment:fixed,scroll;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+
+/* Header: sticky with negative top = hero height, so the hero scrolls away and the bar stays. */
+header{position:sticky;top:calc(env(safe-area-inset-top,0px) - var(--hero-h,0px));z-index:5;
+  padding-top:env(safe-area-inset-top,0px)}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:18px 10px;opacity:var(--hero-o,1)}
+.hero-text{min-width:0}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(32px,9vw,44px);line-height:1.02;margin:6px 0 4px;text-wrap:balance}
+.status{font-size:14px;color:var(--dim);min-height:1.5em}
+.status b{color:var(--accent);font-weight:600}
+.cypress-art{flex:0 0 auto;width:104px;height:84px;color:var(--cypress)}
+.cypress-art .sun{fill:var(--sun);opacity:.8}
+.cypress-art .wave{stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round}
+.bar{background:var(--bg);padding-block:8px 10px;margin-inline:-16px;padding-inline:16px;border-bottom:1px solid var(--line);
+  box-shadow:0 6px 12px -10px rgba(0,0,0,calc(var(--stuck,0)*.35))}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--body);padding:7px 14px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.days{display:flex;gap:6px;margin-top:8px}
+.day{flex:1 1 0;min-width:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:5px 4px;cursor:pointer;text-align:center;font-family:var(--body);position:relative}
+.day .d{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.day .n{font-family:var(--display);font-size:21px;line-height:1.1}
+.day .t{font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;min-height:1.2em}
+.day[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.day.today::after{content:"";position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--warn)}
+.day.past{opacity:.6}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+#content{padding-top:18px}
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap;margin-bottom:12px}
+.dayhead h2{font-family:var(--display);font-weight:400;font-size:27px;margin:0;text-wrap:balance}
+.wx{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
+.wx b{color:var(--ink)}
+.wx svg{width:18px;height:18px;color:var(--accent)}
+
+.nowbar{display:flex;gap:10px;align-items:center;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
+.nowbar .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-weight:700}
+.nowbar b{font-weight:700}
+
+.list{display:flex;flex-direction:column;gap:10px}
+.stop{display:grid;grid-template-columns:58px 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stop.past{opacity:.55}
+.stop.now{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.stop.next{border-style:dashed;border-color:var(--accent)}
+.time{font-family:var(--mono);font-size:13px;color:var(--accent);padding-top:2px;font-variant-numeric:tabular-nums}
+.time small{display:block;font-size:10px;color:var(--dim)}
+.body{min-width:0}
+.title{font-weight:700;font-size:15.5px}
+.place{color:var(--dim);font-size:13px}
+.note{margin:6px 0 0;font-size:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:11px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.chip.prop{background:transparent;border:1px dashed var(--line);color:var(--dim)}
+.chip.todo{background:var(--warn-soft);color:var(--warn)}
+.chip.luna{background:transparent;border:1px solid var(--cypress);color:var(--cypress)}
+.chip.noluna{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+.chip.live{background:var(--ink);color:var(--bg)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.act{font-size:12.5px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:var(--surface)}
+.act:hover{border-color:var(--accent);color:var(--accent)}
+.phone{font-family:var(--mono);font-size:12px;color:var(--dim);user-select:all}
+
+.olab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:700;margin-top:10px}
+.opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.opt{display:inline-flex;align-items:center;gap:5px;font:600 12.5px var(--body);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer}
+.opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pick{width:12px;height:14px;color:var(--gold);flex:0 0 auto}
+.optd{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:13.5px}
+.optd .meta{color:var(--dim);font-size:12.5px}
+
+.stop.pitch{border-color:var(--warn);background:linear-gradient(var(--warn),var(--warn)) top/100% 3px no-repeat,var(--surface)}
+.stop.pitch .time{color:var(--warn)}
+.rules{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.rules li{display:grid;grid-template-columns:22px 1fr;gap:6px}
+.rules li span{font-family:var(--mono);color:var(--warn);font-size:12px;padding-top:2px}
+.script{margin-top:10px;font-family:var(--display);font-size:19px;line-height:1.3;color:var(--warn)}
+
+.fc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:440px){.fc{grid-template-columns:1fr}}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.fcard.today{border-color:var(--accent)}
+.fhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fhead .dn{font-weight:700}
+.fhead svg{width:34px;height:34px;color:var(--accent)}
+.temps{font-family:var(--display);font-size:36px;line-height:1.05;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.temps span{font-size:20px;color:var(--dim)}
+.cond{font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:10px;font-size:12.5px;font-variant-numeric:tabular-nums}
+.stats dt{color:var(--dim)}
+.stats dd{margin:0;font-weight:600}
+.stats div{display:flex;justify-content:space-between;gap:6px;border-top:1px solid var(--line);padding-top:4px}
+.tip{font-size:13px;color:var(--dim);margin-top:10px}
+.fnote{font-size:12.5px;color:var(--dim);margin-top:12px}
+
+.grp{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:700;margin:18px 0 8px}
+.grp:first-child{margin-top:0}
+.tlist{display:flex;flex-direction:column;gap:8px}
+.todo-item{display:grid;grid-template-columns:24px 1fr;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.todo-item input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent)}
+.todo-item.done .title{text-decoration:line-through;color:var(--dim)}
+.meals{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.meal{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--body);padding:6px 14px;border-radius:10px;cursor:pointer}
+.meal[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.alt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.alt-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.alt-top .title{font-size:15.5px}
+.alt-area{font-size:12px;color:var(--dim);font-weight:600;letter-spacing:.04em}
+.alt .what{font-size:13px;color:var(--dim)}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--dim)}
+.tag.os{border-color:var(--gold);color:var(--gold)}
+.tag.ro{border-color:var(--warn);color:var(--warn)}
+.alt-intro{font-size:13.5px;color:var(--dim);margin:0 0 12px}
+footer{margin-top:28px;font-size:12.5px;color:var(--dim);display:flex;gap:10px;align-items:flex-start}
+footer svg{flex:0 0 auto;width:18px;height:22px;color:var(--cypress)}
+@media (prefers-reduced-motion:no-preference){.stop,.fcard,.todo-item{animation:rise .25s ease both}}
+@keyframes rise{from{transform:translateY(4px)}to{transform:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="cy" viewBox="0 0 24 28"><path fill="currentColor" d="M12 2c2 0 3 1.3 3.2 2.6 1.8-.3 3.8.6 4.3 2.4 1.9.4 3 2.1 2.4 3.9-.6 1.6-2.4 2.3-4 1.8-.9 1.2-2.6 1.6-4 1.1l.4 3.4c1.2.5 2.4 1.5 2.9 3.1h-3.4l.6 5.7h-3l.5-5.7H8.6c.5-1.6 1.7-2.6 2.9-3.1l.3-3.3c-1.5.6-3.2.1-4-1.1-1.6.5-3.4-.2-4-1.8C3.2 9 4.3 7.3 6.2 7c.5-1.8 2.5-2.7 4.3-2.4C10.7 3.3 11 2 12 2z"/></symbol>
+</svg>
+<div class="wrap">
+  <header id="hdr">
+    <div class="hero" id="hero">
+      <div class="hero-text">
+        <div class="eyebrow">Oct 8 – 11, 2026 · Sean &amp; Alana</div>
+        <h1>Monterey for Two</h1>
+        <div class="status" id="status"></div>
+      </div>
+      <svg class="cypress-art" viewBox="0 0 104 84" aria-hidden="true">
+        <circle class="sun" cx="78" cy="30" r="13"/>
+        <path fill="currentColor" d="M38 14c4-3 10-2 12 2 5-2 11 0 12 5 5 0 9 4 8 9-1 4-5 6-9 5-3 3-7 4-11 2-2 3-6 4-10 2l-1 9c3 1 6 3 7 7h-8l1 12h-6l1-12h-8c1-4 4-6 7-7l1-8c-4 2-9 1-11-3-5 1-9-2-9-7 0-4 3-7 7-7 0-5 5-8 10-7 1-2 3-3 6-2z"/>
+        <path fill="currentColor" opacity=".55" d="M14 70c6-7 14-9 22-8s14 3 22 1c6-1 10 2 12 7H14z"/>
+        <path class="wave" d="M4 76c6-4 10-4 16 0s10 4 16 0 10-4 16 0 10 4 16 0 10-4 16 0 10 4 16 0"/>
+        <path class="wave" opacity=".5" d="M16 82c5-3 9-3 14 0s9 3 14 0 9-3 14 0 9 3 14 0 9-3 14 0"/>
+      </svg>
+    </div>
+    <div class="bar">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-view="itin">Itinerary</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="fc">Forecast</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="alt">Alternates</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="todo">To Do</button>
+      </div>
+      <div class="days" id="days"></div>
+    </div>
+  </header>
+
+  <main id="content">
+    <section id="v-itin"></section>
+    <section id="v-fc" hidden></section>
+    <section id="v-alt" hidden></section>
+    <section id="v-todo" hidden></section>
+  </main>
+  <footer><svg aria-hidden="true"><use href="#cy"/></svg><span>Staying at the Hyatt Regency Monterey, 1 Old Golf Course Rd. Bringing Luna: leashed dogs are welcome almost everywhere here, Carmel Beach is off-leash, and State Park trails are dog-free.</span></footer>
+</div>
+
+<script>
+const TZ='America/Los_Angeles';
+const LAT=36.6002, LON=-121.8947;
+const map=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+
+const DAYS = [
+ {iso:'2026-10-08',d:'Thu',n:'8',name:'Down the coast',wx:{hi:71,lo:59,rain:0,sky:'Sunny',ic:'sun'},items:[
+  {t:'12:00',ap:'PM',title:'Leave the cabin',place:'Occidental → 101 S to SF',note:'About 1¼ hrs to the city. Check live traffic before you go. Leaving by 11 buys back a full two hours at the museum.',st:'plan',luna:1},
+  {t:'1:15',ap:'PM',title:'Stop at the house',place:'San Francisco',note:'Quick stop on the way through. Grab lunch to eat in the car, since there won\u2019t be time to sit down before the museum closes.',st:'plan',luna:1},
+  {t:'1:45',ap:'PM',title:'Drive to Salinas',place:'101 S down the Peninsula',note:'About 1\u00be\u20132 hrs with Thursday traffic.',st:'plan',luna:1},
+  {t:'3:45',ap:'PM',title:'National Steinbeck Center',place:'1 Main St, Old Town Salinas',addr:'National Steinbeck Center, 1 Main St, Salinas, CA 93901',note:'Steinbeck\u2019s hometown museum: East of Eden and Grapes of Wrath country. It closes at 5, so on this timing you\u2019ll have about an hour, enough for the highlights. $15 per adult. Only service dogs are allowed inside, and Salinas runs warm, so sort out Luna before you go in.',st:'prop',site:'https://steinbeck.org/visit/'},
+  {t:'5:00',ap:'PM',title:'Drive to Monterey',place:'Hwy 68 over the hills',note:'About 25 minutes, past the Laguna Seca turnoff, straight to the hotel.',st:'plan',luna:1},
+  {t:'5:30',ap:'PM',title:'Check in',place:'Hyatt Regency Monterey · on the Del Monte Golf Course',addr:'Hyatt Regency Monterey, 1 Old Golf Course Rd, Monterey, CA 93940',phone:'(831) 372-1234',note:'Booked under Alana. Expect a $35/night resort fee and $25/night parking.',st:'booked',luna:1},
+  {t:'6:15',ap:'PM',title:'Sunset at Lovers Point',place:'Pacific Grove',addr:'Lovers Point Park, Pacific Grove, CA',note:'The name says it all. Leashed dogs are welcome on the beach and trails. Sunset is around 6:45; grab a bench on the rocks facing the bay. The waterfront Recreation Trail runs right past it if you want a stroll first.',st:'prop',luna:1},
+  {t:'7:30',ap:'PM',title:'Dinner',place:'Seaside or downtown Monterey',note:'Casual and local, or a classic seafood night.',st:'prop',opts:[
+    {name:'Other Brother Beer Co.',star:1,cuisine:'Craft brewery · downtown Seaside',price:'$$',vibe:'Big patio with picnic tables in sun and shade; dogs welcome outside. Smash burgers, loaded waffle fries, tots. Ten minutes from Cannery Row. Check Thursday hours before you go.',addr:'Other Brother Beer Co., 877 Broadway Ave, Seaside, CA 93955',phone:'(831) 747-1106'},
+    {name:'Montrio',cuisine:'Californian · in a 1910 firehouse',price:'$$$',vibe:'Leashed dogs welcome on the Calle Principal patio (seasonal, so call ahead). Reservations recommended.',addr:'Montrio Bistro, 414 Calle Principal, Monterey',site:'https://www.montrio.com'},
+    {name:'Alvarado Street Brewery',cuisine:'Brewpub',price:'$$',vibe:'Casual beer garden out back where dogs are welcome.',addr:'Alvarado Street Brewery, 426 Alvarado St, Monterey'},
+    {name:'Old Fisherman’s Grotto',stay:1,cuisine:'Seafood · on the wharf since 1950',price:'$$$',vibe:'Mustard-yellow landmark on Fisherman’s Wharf. The Monterey-style clam chowder has won the local best-chowder vote for years running. Classic, a little kitschy, very Monterey.',addr:'Old Fisherman’s Grotto, 39 Fishermans Wharf, Monterey'},
+    {name:'Peter B’s Brewpub',cuisine:'Brewpub',price:'$$',vibe:'Shaded patio, dogs welcome. Easy first-night pick near Cannery Row.',addr:'Peter B’s Brewpub, Monterey, CA'}
+  ]}
+ ]},
+ {iso:'2026-10-09',d:'Fri',n:'9',name:'The Pitch',wx:{hi:66,lo:59,rain:5,sky:'Partly sunny',ic:'part'},items:[
+  {t:'7:30',ap:'AM',title:'Morning on Carmel Beach',place:'Bottom of Ocean Ave, Carmel',addr:'Carmel Beach, Ocean Ave, Carmel-by-the-Sea',note:'White sand, cypress on the bluffs, and the peninsula’s only off-leash dog beach. 10th and 12th Ave stairways are closed.',st:'prop',luna:1,site:'https://ci.carmel.ca.us/post/beach-rules'},
+  {t:'9:00',ap:'AM',title:'Breakfast in Carmel',place:'Carmel Belle',addr:'Carmel Belle, Carmel-by-the-Sea, CA',note:'Outdoor tables and an organic menu. A good, unhurried breakfast before you need your wits.',st:'prop',luna:1},
+  {t:'10:30',ap:'AM',title:'Drop Luna off',place:'Sitter or daycare',note:'Both of you have to attend.',st:'todo'},
+  {t:'11:20',ap:'AM',title:'Drive to Highlands Inn',place:'Carmel Highlands, ~15 min south of Monterey',addr:'Hyatt Carmel Highlands, 120 Highlands Dr, Carmel, CA 93923',note:'Confirmed for noon in the Hyatt Vacation Club email. Leave time to park and check in.',st:'booked'},
+  {pitch:1,t:'12:00',ap:'PM',title:'The Presentation',place:'Highlands Inn · 120 Highlands Dr',st:'booked',noluna:1},
+  {t:'2:30',ap:'PM',title:'Celebrate your restraint',place:'Back toward Carmel',note:'Victory lap: walk Scenic Road along the bluff above Carmel Beach.',st:'prop',luna:1},
+  {t:'4:00',ap:'PM',title:'Yappy Hour at the Cypress Inn',place:'Terry’s Lounge · Lincoln & 7th, Carmel',addr:'Cypress Inn, Lincoln St & 7th Ave, Carmel-by-the-Sea',note:'Doris Day’s dog-loving hotel, in a 1929 Mission Revival building. Happy hour runs 4–6 and dogs come inside. Toast to signing nothing.',st:'prop',luna:1,site:'https://www.cypress-inn.com'},
+  {t:'6:15',ap:'PM',title:'Sunset on Carmel Beach',place:'Bottom of Ocean Ave, a few blocks from the Cypress Inn',addr:'Carmel Beach, Ocean Ave, Carmel-by-the-Sea',note:'Bring a blanket and a bottle; alcohol is allowed on Carmel Beach until 10 PM. Watch the sun drop behind Point Lobos around 6:45.',st:'prop',luna:1,site:'https://ci.carmel.ca.us/post/beach-rules'},
+  {t:'7:30',ap:'PM',title:'Dinner in Carmel',place:'Carmel-by-the-Sea',note:'The romantic dinner of the trip.',st:'prop',opts:[
+    {name:'Hog’s Breath Inn',cuisine:'American · Clint Eastwood’s place since 1970',price:'$$$',vibe:'Heated fireplace patio and an actual dog menu. Ask for a fireplace table.',addr:'Hog’s Breath Inn, San Carlos St, Carmel-by-the-Sea',phone:'(831) 625-1044'},
+    {name:'Terry’s at the Cypress Inn',cuisine:'Seasonal Californian',price:'$$$',vibe:'Just stay put after Yappy Hour. Dogs welcome, canine menu included.',addr:'Cypress Inn, Lincoln St & 7th Ave, Carmel-by-the-Sea',site:'https://www.cypress-inn.com'},
+    {name:'Carmel’s Bistro Giovanni',cuisine:'Italian',price:'$$',vibe:'Dog-friendly patio, classic red-sauce comfort.',addr:'Bistro Giovanni, Carmel-by-the-Sea, CA'},
+    {name:'Mission Ranch',stay:1,cuisine:'American · Clint Eastwood’s 1850s ranch',price:'$$$',vibe:'Eastwood bought and restored the old dairy ranch in 1986. Live piano nightly, sheep in the meadow, ocean views at sunset. Mostly first-come, so go early and wait at the bar.',addr:'Mission Ranch, 26270 Dolores St, Carmel, CA'},
+    {name:'Casanova',star:1,cuisine:'French-Italian · in an old Carmel house',price:'$$$$',vibe:'The most romantic room in town: candlelit cottage rooms, a 2,000-label wine list, and the table Van Gogh ate at, brought over from Auberge Ravoux. Dogs welcome, too. Reserve, and ask about the Van Gogh table.',addr:'Casanova Restaurant, 5th Ave between Mission & San Carlos, Carmel-by-the-Sea'}
+  ]}
+ ]},
+ {iso:'2026-10-10',d:'Sat',n:'10',name:'Big Sur',wx:{hi:63,lo:54,rain:10,sky:'Cooler, maybe fog',ic:'fog'},items:[
+  {t:'8:30',ap:'AM',title:'Coffee on Cannery Row',place:'Tidal Coffee · 400 Cannery Row',addr:'Tidal Coffee, 400 Cannery Row, Monterey',note:'Dog-friendly patio facing the bay. Grab pastries for the road.',st:'prop',luna:1},
+  {t:'9:30',ap:'AM',title:'Bixby Bridge',place:'Hwy 1, ~30 min south',addr:'Bixby Creek Bridge, Big Sur, CA',note:'Hwy 1 through Big Sur fully reopened in January 2026. Pull out on the north side for the classic shot.',st:'prop',luna:1},
+  {t:'11:00',ap:'AM',title:'Pfeiffer Beach',place:'Sycamore Canyon Rd',addr:'Pfeiffer Beach, Big Sur, CA',note:'Purple sand and Keyhole Rock; leashed dogs allowed. The turnoff is unsigned, a quarter mile south of Big Sur Station, then 2 narrow miles. $10 day-use, cash only.',st:'prop',luna:1,site:'https://www.parks.ca.gov/pages/570/files/DOGS%20in%20Big%20Sur_single.pdf'},
+  {t:'1:00',ap:'PM',title:'Lunch at Nepenthe',place:'808 ft above the ocean, since 1949',addr:'Nepenthe, Big Sur, CA',note:'No reservations, so expect a wait on the terrace. Have a drink on the terrace while you wait; Café Kevah is the casual outdoor option.',st:'prop'},
+  {t:'2:30',ap:'PM',title:'River Path stroll, then head back',place:'Pfeiffer Big Sur State Park',note:'State Park trails are off-limits to dogs, but the River Path and Warden’s Path loop allows them. About 45 min back to Monterey.',st:'prop',luna:1},
+  {t:'7:30',ap:'PM',title:'Date-night dinner',place:'Monterey',note:'The big night out.',st:'prop',opts:[
+    {name:'The Sardine Factory',star:1,stay:1,cuisine:'Seafood · opened 1968',price:'$$$$',vibe:'The restaurant that revived Cannery Row. Its abalone bisque went to Reagan’s inauguration and the cellar runs past 20,000 bottles. Ask for the glass-domed Conservatory room when you book.',addr:'Sardine Factory, 701 Wave St, Monterey',phone:'(831) 373-3775',site:'https://www.sardinefactory.com'},
+    {name:'Monterey’s Fish House',stay:1,cuisine:'Seafood · local favorite',price:'$$$',vibe:'Where locals go for seafood; a perennial winner of Monterey County Weekly’s best-seafood vote. Unfussy room, very fresh fish. Book ahead.',addr:'Monterey’s Fish House, 2114 Del Monte Ave, Monterey'},
+    {name:'Hog’s Breath again',cuisine:'Casual patio',price:'$$$',vibe:'Fireplace patio, dog menu. Worth a repeat.',addr:'Hog’s Breath Inn, San Carlos St, Carmel-by-the-Sea',phone:'(831) 625-1044'}
+  ]}
+ ]},
+ {iso:'2026-10-11',d:'Sun',n:'11',name:'The slow way home',wx:{hi:63,lo:53,rain:10,sky:'Cool and breezy',ic:'cloud'},items:[
+  {t:'8:30',ap:'AM',title:'Breakfast',place:'Cannery Row Delicatessen',addr:'Cannery Row Delicatessen, Monterey, CA',note:'Breakfast sandwiches and omelettes; dog-friendly outdoor seats. Opens at 7.',st:'prop',luna:1},
+  {t:'10:00',ap:'AM',title:'17-Mile Drive',place:'Pacific Grove gate → Carmel gate',addr:'17-Mile Drive, Pebble Beach, CA',note:'About $11.75 per car. Leashed dogs are fine at the pullouts and at Spanish Bay beach. Lone Cypress, Bird Rock, Ghost Tree. Allow 1½–2 hrs with stops.',st:'prop',luna:1},
+  {t:'12:00',ap:'PM',title:'Check out',place:'Hyatt Regency Monterey',addr:'Hyatt Regency Monterey, 1 Old Golf Course Rd, Monterey, CA 93940',note:'Checkout is at noon. Late checkout is by request, subject to availability.',st:'booked'},
+  {t:'1:00',ap:'PM',title:'Last walk on Carmel Beach',place:'Carmel Beach',addr:'Carmel Beach, Ocean Ave, Carmel-by-the-Sea',note:'One more look at the water before the drive home.',st:'prop',luna:1},
+  {t:'3:00',ap:'PM',title:'Drive home',place:'Back to SF',note:'Home around 5:30–6.',st:'plan',luna:1}
+ ]}
+];
+
+const TODO = [
+ {g:'Might need a reservation',items:[
+  {id:'otherbro',title:'Check Other Brother’s Thursday hours',note:'(831) 747-1106. No reservations needed for a brewery patio.'},
+  {id:'casanova',title:'Casanova, Fri ~7:30',note:'Ask about the Van Gogh table.'},
+  {id:'blanket',title:'Blanket and a bottle for Carmel Beach',note:'For Friday sunset. Plastic cups; glass isn’t a good idea on the sand.'},
+  {id:'sardine',title:'Sardine Factory, Sat ~7:30',note:'(831) 373-3775 or OpenTable. Ask for the Conservatory.',site:'https://www.sardinefactory.com'},
+  {id:'fishhouse',title:'Or: Monterey’s Fish House',note:'Book ahead if you’d rather go local on Saturday.'}
+ ]},
+ {g:'Pack',items:[
+  {id:'cash',title:'Cash for Pfeiffer Beach ($10)',note:'Cash only at the kiosk.'},
+  {id:'dogkit',title:'Luna kit',note:'Leash, long towel, water bowl, bags, vaccination record (Carmel Beach requires current license and shots).'},
+  {id:'layers',title:'Layers',note:'Coast highs in the low 60s by the weekend; Big Sur can be foggy.'}
+ ]}
+];
+
+/* ---------- time ---------- */
+function nowLA(){
+  const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+  return {iso:p.year+'-'+p.month+'-'+p.day, m:(+p.hour%24)*60+(+p.minute)};
+}
+function mins(it){const [h,mm]=it.t.split(':').map(Number);let H=h%12;if(it.ap==='PM')H+=12;return H*60+(mm||0)}
+function fmtDur(m){m=Math.max(0,Math.round(m));const h=Math.floor(m/60),r=m%60;return h?(h+'h'+(r?' '+r+'m':'')):r+'m'}
+const fmtDay=s=>new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+const daysBetween=(a,b)=>Math.round((Date.parse(b+'T12:00:00')-Date.parse(a+'T12:00:00'))/864e5);
+const TRIP0=DAYS[0].iso, TRIP1=DAYS[DAYS.length-1].iso;
+
+let NOW=nowLA();
+let sel=Math.max(0,DAYS.findIndex(d=>d.iso===NOW.iso));
+let view='itin';
+
+/* Which stop is happening now / next on a given day */
+function liveState(day){
+  if(day.iso!==NOW.iso) return {cur:-1,next:-1};
+  let cur=-1,next=-1;
+  day.items.forEach((it,i)=>{if(mins(it)<=NOW.m)cur=i;else if(next<0)next=i});
+  return {cur,next};
+}
+
+function renderStatus(){
+  const el=document.getElementById('status'), d=daysBetween(NOW.iso,TRIP0);
+  if(d>1){el.innerHTML='<b>'+d+' days to go.</b> A romantic weekend, paid for in two hours of willpower.';return}
+  if(d===1){el.innerHTML='<b>Tomorrow.</b> Wheels rolling at noon.';return}
+  const i=DAYS.findIndex(x=>x.iso===NOW.iso);
+  if(i>=0){
+    const {next}=liveState(DAYS[i]);
+    if(next>=0){const it=DAYS[i].items[next];el.innerHTML='<b>Day '+(i+1)+' of 4.</b> Up next: '+esc(it.title)+' in '+fmtDur(mins(it)-NOW.m)+'.'}
+    else el.innerHTML='<b>Day '+(i+1)+' of 4.</b> '+(i===DAYS.length-1?'Safe drive home.':'That’s a wrap for today.');
+    return;
+  }
+  el.innerHTML='<b>Back home.</b> Hope it was a good one.';
+}
+
+/* ---------- weather ---------- */
+const WX={};               // iso -> live daily values
+let wxState='loading';     // loading | live | fallback
+function wxInfo(code){
+  if(code==null) return ['Forecast','cloud'];
+  if(code===0) return ['Clear','sun'];
+  if(code<=2) return ['Partly cloudy','part'];
+  if(code===3) return ['Overcast','cloud'];
+  if(code===45||code===48) return ['Fog','fog'];
+  if(code>=95) return ['Thunderstorms','storm'];
+  if(code>=51) return [code<=57?'Drizzle':'Rain','rain'];
+  return ['Cloudy','cloud'];
+}
+const ICONS={
+ sun:'<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>',
+ part:'<circle cx="9" cy="9" r="3.5"/><path d="M9 2.5v1.5M2.5 9H4M4.4 4.4l1 1M13.6 4.4l-1 1"/><path d="M8 19h10a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 8 19z"/>',
+ cloud:'<path d="M6.5 19h11a4 4 0 0 0 0-8 6 6 0 0 0-11.4 1.8A3.1 3.1 0 0 0 6.5 19z"/>',
+ fog:'<path d="M6.5 13h11a4 4 0 0 0 0-8"/><path d="M3 16h18M5 19.5h14M3 13h2"/>',
+ rain:'<path d="M6.5 15h11a4 4 0 0 0 0-8 6 6 0 0 0-11.4 1.8A3.1 3.1 0 0 0 6.5 15z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',
+ storm:'<path d="M6.5 14h11a4 4 0 0 0 0-8 6 6 0 0 0-11.4 1.8A3.1 3.1 0 0 0 6.5 14z"/><path d="M12 15l-2 4h3l-2 4"/>'
+};
+const icon=k=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICONS[k]+'</svg>';
+function dayWx(d){
+  const w=WX[d.iso];
+  if(w) return {hi:w.hi,lo:w.lo,rain:w.rain,label:wxInfo(w.code)[0],ic:wxInfo(w.code)[1],w};
+  return {hi:d.wx.hi,lo:d.wx.lo,rain:d.wx.rain,label:d.wx.sky,ic:d.wx.ic||'part',w:null};
+}
+async function loadWeather(){
+  const url='https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+
+   '&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset'+
+   '&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone='+encodeURIComponent(TZ)+
+   '&start_date='+TRIP0+'&end_date='+TRIP1;
+  try{
+    const r=await fetch(url); if(!r.ok) throw new Error(r.status);
+    const j=await r.json(), D=j.daily;
+    D.time.forEach((t,i)=>{WX[t]={code:D.weather_code[i],hi:Math.round(D.temperature_2m_max[i]),lo:Math.round(D.temperature_2m_min[i]),
+      feels:Math.round(D.apparent_temperature_max[i]),rain:D.precipitation_probability_max[i],precip:D.precipitation_sum[i],
+      wind:Math.round(D.wind_speed_10m_max[i]),uv:D.uv_index_max[i],sunrise:D.sunrise[i],sunset:D.sunset[i]}});
+    wxState='live';
+  }catch(e){wxState='fallback'}
+  renderItin();renderFc();
+}
+
+/* ---------- rendering ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function actions(o){
+  let h='';
+  if(o.addr) h+='<a class="act" href="'+map(o.addr)+'" target="_blank" rel="noopener">Map</a>';
+  if(o.phone) h+='<a class="act" href="tel:+1'+o.phone.replace(/\D/g,'')+'">Call</a><span class="phone">'+o.phone+'</span>';
+  if(o.site) h+='<a class="act" href="'+o.site+'" target="_blank" rel="noopener">↗ Site</a>';
+  return h?'<div class="acts">'+h+'</div>':'';
+}
+const pickIcon='<svg class="pick" aria-label="Suggested"><use href="#cy"/></svg>';
+const stLabel={booked:['Booked',''],plan:['Plan',''],prop:['Idea','prop'],todo:['Needs booking','todo']};
+
+function renderDays(){
+  document.getElementById('days').innerHTML=DAYS.map((d,i)=>{
+    const w=dayWx(d), cls=(d.iso===NOW.iso?' today':'')+(d.iso<NOW.iso?' past':'');
+    return '<button class="day'+cls+'" aria-selected="'+(i===sel)+'" data-i="'+i+'"><div class="d">'+d.d+'</div><div class="n">'+d.n+'</div><div class="t">'+w.hi+'°</div></button>'}).join('');
+}
+function optDetail(o){
+  return '<div><b>'+esc(o.name)+'</b> <span class="meta">· '+esc(o.cuisine)+' · '+o.price+'</span></div><div>'+esc(o.vibe)+'</div>'+actions(o);
+}
+function pitchCard(it,cls){
+  return '<div class="stop pitch'+cls+'"><div class="time">'+it.t+'<small>'+it.ap+'</small></div><div class="body">'+
+   '<div class="title">'+esc(it.title)+'</div><div class="place">'+esc(it.place)+' · 2 hours, give or take</div>'+
+   '<p class="note">This is what pays for the weekend. Sit through it, collect the reward, buy nothing. You both have to attend, or the stay gets charged at full retail.</p>'+
+   '<ul class="rules">'+
+   '<li><span>01</span>Agree in the car: no one signs anything today, no matter what.</li>'+
+   '<li><span>02</span>Today-only pricing is a sales tactic. A good deal survives a night’s sleep.</li>'+
+   '<li><span>03</span>When they bring out the manager, the answer is the same.</li>'+
+   '<li><span>04</span>Walk out with the $100 Blackhawk gift card in hand.</li>'+
+   '<li><span>05</span>Safety net: California gives timeshare buyers a short cancellation window. Plan not to need it.</li>'+
+   '</ul><div class="script">“It’s beautiful. We never decide anything the same day.”</div>'+
+   '<div class="chips"><span class="chip">Booked</span></div></div></div>';
+}
+function renderItin(){
+  const d=DAYS[sel], w=dayWx(d), live=liveState(d);
+  let h='<div class="dayhead"><h2>'+esc(d.name)+'</h2><div class="wx">'+icon(w.ic)+'<span>'+fmtDay(d.iso)+' · <b>'+w.hi+'°</b> / '+w.lo+'° · '+w.label+'</span></div></div>';
+  if(live.next>=0||live.cur>=0){
+    const n=d.items[live.next];
+    h+=n?'<div class="nowbar"><div><div class="lbl">Up next · in '+fmtDur(mins(n)-NOW.m)+'</div><b>'+esc(n.title)+'</b> at '+n.t+' '+n.ap+'</div></div>'
+        :'<div class="nowbar"><div><div class="lbl">Done for today</div><b>Nothing else on the schedule.</b> Enjoy it.</div></div>';
+  }
+  h+='<div class="list">';
+  d.items.forEach((it,k)=>{
+    let cls='', badge='';
+    if(d.iso<NOW.iso || (d.iso===NOW.iso && live.cur>=0 && k<live.cur)) cls=' past';
+    if(d.iso===NOW.iso && k===live.cur){cls=' now';badge='<span class="chip live">Now</span>'}
+    if(d.iso===NOW.iso && k===live.next){cls=' next';badge='<span class="chip live">Up next</span>'}
+    if(it.pitch){h+=pitchCard(it,cls);return}
+    const s=stLabel[it.st]||stLabel.prop;
+    h+='<div class="stop'+cls+'" id="s-'+k+'"><div class="time">'+it.t+'<small>'+it.ap+'</small></div><div class="body">'+
+      '<div class="title">'+esc(it.title)+'</div><div class="place">'+esc(it.place)+'</div>'+
+      (it.note?'<p class="note">'+esc(it.note)+'</p>':'');
+    if(it.opts){
+      const btn=(o,j)=>'<button class="opt" aria-pressed="'+(o.star?'true':'false')+'" data-k="'+k+'" data-j="'+j+'">'+(o.star?pickIcon:'')+esc(o.name)+'</button>';
+      const withL=it.opts.map((o,j)=>o.stay?'':btn(o,j)).join(''), stayL=it.opts.map((o,j)=>o.stay?btn(o,j):'').join('');
+      if(withL) h+='<div class="olab">Patio · dog-friendly</div><div class="opts">'+withL+'</div>';
+      if(stayL) h+='<div class="olab">Inside · needs a sitter</div><div class="opts">'+stayL+'</div>';
+      const o=it.opts.find(x=>x.star)||it.opts[0];
+      h+='<div class="optd" id="od-'+k+'">'+optDetail(o)+'</div>';
+    }
+    h+='<div class="chips">'+badge+'<span class="chip '+s[1]+'">'+s[0]+'</span>'+(it.noluna?'<span class="chip noluna">No Luna</span>':'')+'</div>'+
+      actions(it)+'</div></div>';
+  });
+  document.getElementById('v-itin').innerHTML=h+'</div>';
+}
+const TIPS={'2026-10-08':'Arrival day. Light layers for the evening waterfront walk.','2026-10-09':'Bring a jacket for Yappy Hour on the patio.','2026-10-10':'Big Sur can sit in fog at the coast while it’s sunny inland.','2026-10-11':'Breezy at the 17-Mile Drive pullouts; towel for sandy paws.'};
+const tm=s=>s?new Date(s).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'—';
+function renderFc(){
+  let h='<div class="fc">'+DAYS.map(d=>{
+    const w=dayWx(d), L=w.w;
+    const stats=[['Feels like',L?L.feels+'°':'—'],['Rain chance',w.rain+'%'],['Precip',L?L.precip.toFixed(2)+' in':'—'],['Wind',L?L.wind+' mph':'—'],['UV index',L?Math.round(L.uv):'—'],['Sun',L?tm(L.sunrise)+' – '+tm(L.sunset):'—']];
+    return '<div class="fcard'+(d.iso===NOW.iso?' today':'')+'"><div class="fhead"><div class="dn">'+fmtDay(d.iso)+'</div>'+icon(w.ic)+'</div>'+
+      '<div class="temps">'+w.hi+'° <span>/ '+w.lo+'°</span></div><div class="cond">'+w.label+'</div>'+
+      '<dl class="stats">'+stats.map(s=>'<div><dt>'+s[0]+'</dt><dd>'+s[1]+'</dd></div>').join('')+'</dl>'+
+      '<div class="tip">'+TIPS[d.iso]+'</div></div>'}).join('')+'</div>';
+  h+='<p class="fnote">'+(wxState==='live'?'Live forecast for Monterey from Open-Meteo, updated when the page loads.'
+     :wxState==='loading'?'Loading the live forecast…'
+     :'Showing the Oct 6 snapshot. The live forecast loads on the deployed page once the trip is within forecast range.')+'</p>';
+  document.getElementById('v-fc').innerHTML=h;
+}
+
+const ALTS={
+ breakfast:[
+  {name:'Katy’s Place',area:'Carmel',what:'Breakfast · since 1982',why:'Calls itself the capital of eggs Benedict, with 20-plus versions, and has won Carmel’s best-breakfast vote year after year. Patio seating. Closed Wednesdays.',tags:['Old-school','Patio'],addr:'Katy’s Place, Mission St between 5th & 6th, Carmel-by-the-Sea',phone:'(831) 624-0199'},
+  {name:'Red’s Donuts',area:'Downtown Monterey',what:'Donuts · since 1950',why:'Hand-made donuts on the original recipe, in a tiny counter shop locals treat like a neighborhood bar. Grab a bag for the 17-Mile Drive.',tags:['Old-school','Quick'],addr:'Red’s Donuts, Alvarado St, Monterey'},
+  {name:'Old Monterey Café',area:'Downtown Monterey',what:'Diner breakfast',why:'A homestyle breakfast-and-lunch spot full of regulars, with Greek-leaning omelets and big plates.',tags:['Local'],addr:'Old Monterey Cafe, 489 Alvarado St, Monterey'},
+  {name:'Carmel Belle',area:'Carmel',what:'Café · organic',why:'Thoughtful, seasonal breakfast plates and good coffee. Outdoor tables welcome dogs.',tags:['Patio'],addr:'Carmel Belle, Carmel-by-the-Sea, CA'},
+  {name:'Tidal Coffee',area:'Cannery Row',what:'Coffee & pastries',why:'Espresso and croissants on a patio that looks straight across the bay.',tags:['Bay view','Quick'],addr:'Tidal Coffee, 400 Cannery Row, Monterey'},
+  {name:'Cannery Row Delicatessen',area:'Cannery Row',what:'Deli · opens at 7',why:'Breakfast sandwiches and omelettes, fast. A few outdoor seats.',tags:['Quick'],addr:'Cannery Row Delicatessen, Monterey, CA'},
+  {name:'Terry’s at the Cypress Inn',area:'Carmel',what:'Sunday brunch',why:'Brunch in Doris Day’s 1929 hotel, with fireplace lounge and garden patio. A lovely last-morning splurge.',tags:['Old Hollywood','Romantic'],addr:'Cypress Inn, Lincoln St & 7th Ave, Carmel-by-the-Sea',site:'https://www.cypress-inn.com'}
+ ],
+ lunch:[
+  {name:'Old Fisherman’s Grotto',area:'Fisherman’s Wharf',what:'Seafood · since 1950',why:'The award-winning Monterey-style clam chowder is the order. A bowl at the wharf is the classic Monterey lunch.',tags:['Old-school'],addr:'Old Fisherman’s Grotto, 39 Fishermans Wharf, Monterey'},
+  {name:'The Giant Artichoke',area:'Castroville',what:'Roadside stand',why:'Fried artichokes under a giant concrete artichoke, right on the drive down. Good to-go.',tags:['Old-school','Quick'],addr:'The Giant Artichoke, Castroville, CA'},
+  {name:'Café Kevah',area:'Big Sur',what:'Casual outdoor café',why:'Nepenthe’s laid-back sister terrace, same cliffside view with shorter waits.',tags:['Ocean view'],addr:'Cafe Kevah, Big Sur, CA'},
+  {name:'Nepenthe',area:'Big Sur',what:'American · since 1949',why:'808 feet above the Pacific on land once owned by Orson Welles and Rita Hayworth. No reservations; wait with a drink on the terrace.',tags:['Old-school','Romantic'],addr:'Nepenthe, Big Sur, CA'},
+  {name:'Hog’s Breath Inn',area:'Carmel',what:'American · since 1970',why:'Clint Eastwood’s old place. The courtyard with fireplaces is a great lunch spot.',tags:['Old-school','Patio'],addr:'Hog’s Breath Inn, San Carlos St, Carmel-by-the-Sea',phone:'(831) 625-1044'},
+  {name:'Alvarado Street Brewery',area:'Downtown Monterey',what:'Brewpub',why:'Beer garden out back, solid pub food, easy walk from the wharf.',tags:['Patio'],addr:'Alvarado Street Brewery, 426 Alvarado St, Monterey'}
+ ],
+ dinner:[
+  {name:'The Sardine Factory',area:'Cannery Row',what:'Seafood · since 1968',why:'The restaurant that revived Cannery Row, with a 20,000-bottle cellar. Ask for the glass-domed Conservatory.',tags:['Old-school','Romantic'],addr:'Sardine Factory, 701 Wave St, Monterey',phone:'(831) 373-3775',site:'https://www.sardinefactory.com'},
+  {name:'Casanova',area:'Carmel',what:'French-Italian',why:'Candlelit cottage rooms, a 2,000-label wine list, and Van Gogh’s old table. Dogs welcome.',tags:['Romantic','Patio'],addr:'Casanova Restaurant, 5th Ave between Mission & San Carlos, Carmel-by-the-Sea'},
+  {name:'Mission Ranch',area:'Carmel',what:'American · 1850s ranch',why:'Clint Eastwood’s restored dairy ranch: live piano nightly, sheep in the meadow, sunset over the water. Mostly first-come.',tags:['Old-school','Romantic'],addr:'Mission Ranch, 26270 Dolores St, Carmel, CA'},
+  {name:'Monterey’s Fish House',area:'Monterey',what:'Seafood',why:'The locals’ seafood pick and a perennial best-seafood winner. Unfussy and very fresh. Book ahead.',tags:['Local'],addr:'Monterey’s Fish House, 2114 Del Monte Ave, Monterey'},
+  {name:'Hog’s Breath Inn',area:'Carmel',what:'American · since 1970',why:'Fireplace patio tables and a dog menu. Ask for a fireplace table.',tags:['Old-school','Patio'],addr:'Hog’s Breath Inn, San Carlos St, Carmel-by-the-Sea',phone:'(831) 625-1044'},
+  {name:'Montrio',area:'Downtown Monterey',what:'Californian',why:'Set in a 1910 firehouse, with a seasonal patio. Polished but relaxed.',tags:['Patio'],addr:'Montrio Bistro, 414 Calle Principal, Monterey',site:'https://www.montrio.com'},
+  {name:'Terry’s at the Cypress Inn',area:'Carmel',what:'Seasonal Californian',why:'Dinner after Yappy Hour without moving. Live music on weekends.',tags:['Old Hollywood','Patio'],addr:'Cypress Inn, Lincoln St & 7th Ave, Carmel-by-the-Sea',site:'https://www.cypress-inn.com'},
+  {name:'Carmel’s Bistro Giovanni',area:'Carmel',what:'Italian',why:'Red-sauce comfort on a dog-friendly patio.',tags:['Patio'],addr:'Bistro Giovanni, Carmel-by-the-Sea, CA'},
+  {name:'Other Brother Beer Co.',area:'Seaside',what:'Craft brewery',why:'Big picnic-table patio, smash burgers and loaded waffle fries.',tags:['Patio','Casual'],addr:'Other Brother Beer Co., 877 Broadway Ave, Seaside, CA 93955',phone:'(831) 747-1106'},
+  {name:'Peter B’s Brewpub',area:'Cannery Row',what:'Brewpub',why:'Shaded patio, easy, no-plan dinner near the water.',tags:['Patio','Casual'],addr:'Peter B’s Brewpub, Monterey, CA'}
+ ],
+ cocktails:[
+  {name:'Sunset Lounge at Highlands Inn',area:'Carmel Highlands',what:'Lodge lounge',why:'An intimate lounge in the main lodge with Point Lobos views, small plates, and wine. You’re already in the building after the pitch, so toast to buying nothing.',tags:['Romantic','Ocean view'],addr:'Hyatt Carmel Highlands, 120 Highlands Dr, Carmel, CA 93923'},
+  {name:'Sea Root',area:'Your hotel',what:'Hotel cocktail bar',why:'Inside the Hyatt Regency, and the Weekly calls it a cocktail paradise. The no-drive nightcap.',tags:['Nightcap'],addr:'Hyatt Regency Monterey, 1 Old Golf Course Rd, Monterey'},
+  {name:'Sardine Factory lounge',area:'Cannery Row',what:'Piano bar · since 1968',why:'Couches, cozy corners, a piano, and one of the deepest wine cellars in the region. Drinks here without the full dinner works too.',tags:['Old-school','Romantic'],addr:'Sardine Factory, 701 Wave St, Monterey',phone:'(831) 373-3775'},
+  {name:'Mission Ranch bar',area:'Carmel',what:'Piano bar · 1850s ranch',why:'Fireplaces, a piano bar, and a patio looking over the sheep meadow to the ocean. Best right at sunset.',tags:['Old-school','Romantic'],addr:'Mission Ranch, 26270 Dolores St, Carmel, CA'},
+  {name:'Terry’s Lounge',area:'Carmel',what:'Classic cocktails',why:'Vintage cocktails in Doris Day’s Cypress Inn. Dogs welcome.',tags:['Old Hollywood','Patio'],addr:'Cypress Inn, Lincoln St & 7th Ave, Carmel-by-the-Sea',site:'https://www.cypress-inn.com'},
+  {name:'Bud’s at La Playa',area:'Carmel',what:'Hotel bar',why:'Known for “Dime Time”: a 10-minute happy hour where drinks cost 10 cents, paid in dimes. Bring a roll of them.',tags:['Fun'],addr:'La Playa Hotel, Camino Real & 8th Ave, Carmel-by-the-Sea'},
+  {name:'Next Door',area:'New Monterey',what:'Speakeasy',why:'Next to Hula’s on Lighthouse Ave. When the red light is on, the door is open. Fine spirits and craft cocktails.',tags:['Hidden'],addr:'622 Lighthouse Ave, Monterey, CA'},
+  {name:'Stokes Adobe',area:'Downtown Monterey',what:'Bar in an 1833 adobe',why:'Creative cocktails in one of Monterey’s historic adobes, with a patio.',tags:['Old-school','Patio'],addr:'Stokes Adobe, 500 Hartnell St, Monterey'}
+ ],
+ dive:[
+  {name:'Segovia’s',area:'New Monterey',what:'Bar · since 1937',why:'The oldest bar on the Monterey Peninsula, with an upscale-dive look.',tags:['Old-school'],addr:'Segovia’s, 650 Lighthouse Ave, Monterey'},
+  {name:'Alfredo’s Cantina',area:'Downtown Monterey',what:'Dive bar · cash only',why:'Readers’ pick for best dive bar: dark and moody at any hour, cold drinks, no pretense.',tags:['Cash only'],addr:'Alfredo’s Cantina, 266 Pearl St, Monterey'},
+  {name:'Sly’s Refueling Station',area:'Cannery Row',what:'Bar with live music',why:'Free live music every night, right on Cannery Row.',tags:['Live music'],addr:'Sly’s Refueling Station, 700 Cannery Row, Monterey'},
+  {name:'Fernwood Tavern',area:'Big Sur',what:'Roadside tavern',why:'Locals, campers, and travelers on a redwood deck, with live music. A natural Saturday stop on the way back from Pfeiffer Beach.',tags:['Old-school','Patio'],addr:'Fernwood Tavern, 47200 Highway 1, Big Sur, CA'},
+  {name:'Big Sur River Inn',area:'Big Sur',what:'Riverside bar',why:'Adirondack chairs set right in the river, plus a deck and a cozy bar inside.',tags:['Fun'],addr:'Big Sur River Inn, 46800 Highway 1, Big Sur, CA'}
+ ],
+ beer:[
+  {name:'Other Brother Beer Co.',area:'Seaside',what:'Craft brewery',why:'Big picnic-table patio, smash burgers, dogs welcome outside.',tags:['Patio'],addr:'Other Brother Beer Co., 877 Broadway Ave, Seaside, CA 93955',phone:'(831) 747-1106'},
+  {name:'Alvarado Street Brewery',area:'Downtown Monterey',what:'Brewery & bistro',why:'Award-winning beers and a beer garden out back.',tags:['Patio'],addr:'Alvarado Street Brewery, 426 Alvarado St, Monterey'},
+  {name:'Dust Bowl Brewing',area:'Downtown Monterey',what:'Brewery taproom',why:'Patio with cornhole and a dog-friendly outdoor space.',tags:['Patio'],addr:'Dust Bowl Brewing, 290 Figueroa St, Monterey'},
+  {name:'Peter B’s Brewpub',area:'Cannery Row',what:'Brewpub',why:'Classic and inventive styles brewed on site; shaded patio.',tags:['Patio'],addr:'Peter B’s Brewpub, Monterey, CA'},
+  {name:'Big Sur Taphouse',area:'Big Sur',what:'Pub',why:'Neighborhood pub with an outdoor patio right on Highway 1.',tags:['Patio'],addr:'Big Sur Taphouse, 47520 Highway 1, Big Sur, CA'}
+ ],
+ snacks:[
+  {name:'Red’s Donuts',area:'Downtown Monterey',what:'Donuts · since 1950',why:'Made every morning on the original recipe.',tags:['Old-school'],addr:'Red’s Donuts, 433 Alvarado St, Monterey'},
+  {name:'Parker-Lusseau Pastries',area:'Downtown Monterey',what:'French bakery',why:'Croissants, brioche, galettes, and quiche. Good picnic supplies for the Carmel Beach sunset.',tags:['Picnic'],addr:'Parker-Lusseau Pastries, 539 Hartnell St, Monterey'},
+  {name:'Crêpes of Brittany',area:'Downtown Monterey',what:'Crêpes',why:'The Peninsula’s oldest crêperie, near the wharf.',tags:['Old-school','Quick'],addr:'Crepes of Brittany, 211 Alvarado St, Monterey'},
+  {name:'Ad Astra Bread Co.',area:'Downtown Monterey',what:'Bakery',why:'Considered the area’s best bread. Grab a loaf and cheese for a beach picnic.',tags:['Picnic'],addr:'Ad Astra Bread, 479 Alvarado St, Monterey'},
+  {name:'Monterey’s Tasty Olive Bar',area:'Cannery Row',what:'Olive oil tasting',why:'Taste through olive oils and balsamics; easy souvenir.',tags:['Fun'],addr:'Monterey’s Tasty Olive Bar, 751 Cannery Row, Monterey'},
+  {name:'Compagno’s Market & Deli',area:'New Monterey',what:'Deli · giant sandwiches',why:'Locals’ favorite for huge deli sandwiches. Pick up two before Saturday’s Big Sur drive, where food is scarce and pricey.',tags:['Picnic','Local'],addr:'Compagno’s Market & Deli, 2000 Prescott Ave, Monterey'},
+  {name:'Abalonetti',area:'Fisherman’s Wharf',what:'Calamari six ways',why:'Famous for squid, done six different ways, with dockside views. Share a plate as a wharf snack.',tags:['Old-school'],addr:'Abalonetti Bar & Grill, 57 Fishermans Wharf, Monterey'},
+  {name:'Oystertown',area:'Downtown Monterey',what:'Oyster bar',why:'California oysters by the dozen, plus oddballs like meatballs and tiramisu ice cream. Good pre-dinner stop.',tags:['Romantic'],addr:'Oystertown, 281 Lighthouse Ave, Monterey'},
+  {name:'Mission 19 Taqueria',area:'New Monterey',what:'Tacos',why:'Hand-rolled tortillas and slow-simmered birria at an unassuming corner spot.',tags:['Local','Quick'],addr:'Mission 19 Taqueria, 598 Lighthouse Ave, Monterey'},
+  {name:'Coniglio Brothers Italian Deli',area:'Cannery Row',what:'Italian deli',why:'Cured meats, cheeses, and house sandwiches. Build a Carmel Beach sunset board here.',tags:['Picnic'],addr:'Coniglio Brothers Italian Deli, 750 Cannery Row, Monterey'},
+  {name:'Carmel Honey Company',area:'Cannery Row',what:'Honey tasting',why:'Taste local honeys side by side. A sweet, easy souvenir.',tags:['Fun'],addr:'Carmel Honey Company, 700 Cannery Row, Monterey'}
+ ],
+ desserts:[
+  {name:'Carousel Candies',area:'Fisherman’s Wharf',what:'Candy · since 1960',why:'Hand-made candies, and saltwater taffy for the drive home.',tags:['Old-school'],addr:'Carousel Candies, 31 Fishermans Wharf, Monterey'},
+  {name:'Monterey Bay Creamery',area:'Fisherman’s Wharf',what:'Ice cream',why:'Churned on site: sundaes, shakes, and churros.',tags:['Quick'],addr:'Monterey Bay Creamery, 43 Fishermans Wharf, Monterey'},
+  {name:'Paris Bakery',area:'Downtown Monterey',what:'Bakery',why:'Napoleons, fruit tarts, cakes, and light sandwiches.',tags:['Local'],addr:'Paris Bakery, 271 Bonifacio Pl, Monterey'},
+  {name:'Nico’s Ice Cream',area:'Cannery Row',what:'NZ-style ice cream',why:'Vanilla ice cream blended with real fruit while you wait, New Zealand style.',tags:['Quick'],addr:'Nico’s Ice Cream, 711 Cannery Row, Monterey'},
+  {name:'Ghirardelli',area:'Cannery Row',what:'Chocolate & sundaes',why:'Classic hot fudge sundae on Cannery Row.',tags:['Quick'],addr:'Ghirardelli Ice Cream and Chocolate Shop, 660 Cannery Row, Monterey'},
+  {name:'Austino’s Patisserie',area:'Cannery Row',what:'Bakery',why:'Pastries in a bright space at the quiet end of Cannery Row.',tags:['Quick'],addr:'Austino’s Patisserie, 851 Cannery Row, Monterey'},
+  {name:'Layers Cakes',area:'Monterey',what:'Cake shop',why:'Regularly voted the area\u2019s best cake by Weekly readers. Grab two slices for the room.',tags:['Local'],addr:'Layers Cakes, 9 Soledad Dr, Monterey'},
+  {name:'Beans of Eden',area:'Cannery Row',what:'Soft-serve & caf\u00e9',why:'Corner caf\u00e9 with soft-serve, espresso, and pastries. An easy cone on a Cannery Row stroll.',tags:['Quick'],addr:'Beans of Eden, 711 Cannery Row, Monterey'}
+ ],
+ fun:[
+  {name:'Whale watching',area:'Fisherman’s Wharf',what:'Boat trip · 3–4 hrs',why:'October is humpback season: in October 2024 boats saw them on nearly every trip, often lunge-feeding and breaching, with the odd blue whale or orca. Monterey Bay Whale Watch is listed as dog-friendly; call to confirm.',tags:['Bucket list'],addr:'Monterey Bay Whale Watch, Fishermans Wharf, Monterey',phone:'(831) 375-4658',site:'http://www.gowhales.com/'},
+  {name:'Kayak with sea otters',area:'Near your hotel',what:'Guided paddle',why:'Monterey Bay Kayaks runs daily guided tours along the shoreline to see otters, seals, and sea lions, plus kayak and paddleboard rentals. Operating since 1985, a few minutes from the Hyatt.',tags:['Romantic','Wildlife'],addr:'Monterey Bay Kayaks, 693 Del Monte Ave, Monterey',phone:'(831) 373-5357',site:'https://www.montereybaykayaks.com/'},
+  {name:'Carmel Wine Walk',area:'Carmel',what:'Tasting passport',why:'One passport gets you nine tasting flights at any of 14 tasting rooms, all walkable downtown, and the rooms have been known to let dogs inside. Pick it up at the Carmel visitor center; check the current price.',tags:['Romantic','Walkable'],addr:'Carmel Chamber of Commerce Visitor Center, San Carlos St, Carmel-by-the-Sea'},
+  {name:'Couples massage',area:'Your hotel',what:'Spa',why:'You’re staying at the Hyatt Regency Monterey Hotel and Spa. Book a couples treatment for the morning after the pitch, or Sunday before the drive home.',tags:['Romantic'],addr:'Hyatt Regency Monterey, 1 Old Golf Course Rd, Monterey',phone:'(831) 372-1234'},
+  {name:'Sidecar e-bike tour',area:'Carmel',what:'Guided ride · 2 hrs',why:'Mad Dogs & Englishmen puts a dog in a sidecar and rides from downtown Carmel to Carmel Beach and along Scenic Road. Ridiculous and delightful. About $125 per adult.',tags:['Fun'],addr:'Mad Dogs & Englishmen, Ocean Ave & Mission St, Carmel-by-the-Sea'},
+  {name:'Point Pinos Lighthouse',area:'Pacific Grove',what:'Lighthouse · lit since 1855',why:'The longest continuously operating lighthouse on the West Coast, still using its original Fresnel lens. No pets inside; pair it with the Asilomar dune boardwalk next door.',tags:['Old-school'],addr:'Point Pinos Lighthouse, Pacific Grove, CA',site:'https://pointpinoslighthouse.org/visit.html'},
+  {name:'Asilomar dune boardwalk',area:'Pacific Grove',what:'Boardwalk & beach · free',why:'A wooden boardwalk winds through restored dunes to a wild, rocky beach with tide pools. Wilder and quieter than Carmel Beach, and leashed dogs are allowed on the beach and boardwalk. Right next to Point Pinos Lighthouse.',tags:['Romantic','Free'],addr:'Asilomar State Beach, Pacific Grove, CA'},
+  {name:'Carmel Mission',area:'Carmel',what:'Mission · founded 1771',why:'The most beautiful of California’s missions, with a stone basilica and gardens; Junípero Serra is buried here.',tags:['Old-school'],addr:'Carmel Mission Basilica, 3080 Rio Rd, Carmel, CA'},
+  {name:'Otter spotting at Moss Landing',area:'On the drive down',what:'Free',why:'Elkhorn Slough has one of the densest gatherings of sea otters around, often rafted up by the dozen. About 20 minutes north of Monterey on Hwy 1.',tags:['Wildlife'],addr:'Moss Landing Harbor, Moss Landing, CA'},
+  {name:'Casino Monterey',area:'Marina',what:'Cardroom · since 1970',why:'A card room with a bar, open since 1970. A quirky late-night wildcard if you want to play a few hands.',tags:['Old-school','Fun'],addr:'Casino Monterey, 204 Carmel Ave, Marina, CA'},
+  {name:'Bagpiper at Spanish Bay',area:'Pebble Beach',what:'Sunset tradition · since 1987',why:'Every evening at sunset (5:45–6:30 PM this time of year) a kilted piper walks the links from the first tee by STICKS to the fire pits. Grab a drink at the Lobby Lounge terrace fire pits and watch. It’s inside the 17-Mile Drive gates.',tags:['Romantic','Free'],addr:'The Inn at Spanish Bay, 2700 17 Mile Dr, Pebble Beach, CA',site:'https://pebblebeach.com/dining/the-lobby-lounge/bagpiper'},
+  {name:'Brian Regan live',area:'Downtown Monterey',what:'Comedy · Sat Oct 10, 7 PM',why:'The clean-comedy legend is playing the historic Golden State Theatre the Saturday you’re in town. An easy swap for a quieter dinner night.',tags:['Fun','Tickets'],addr:'Golden State Theatre, 417 Alvarado St, Monterey',site:'https://www.tickpick.com/buy-brian-regan-tickets-golden-state-theatre-10-10-26-7pm/7865197/'},
+  {name:'Horseback ride on the beach',area:'Near Moss Landing',what:'Guided trail ride',why:'Monterey Bay Equestrian Center is the only outfit running beach rides here: single file through the dunes and along the sand at Salinas River State Beach. Beginners welcome.',tags:['Romantic','Bucket list'],addr:'Salinas River State Beach, Moss Landing, CA',phone:'(831) 663-5712'},
+  {name:'Pacific Grove Golf Links',area:'Pacific Grove',what:'Seaside muni · ~$69',why:'The “poor man’s Pebble Beach”: back nine through the dunes under Point Pinos Lighthouse, with deer wandering the fairways. Co-designed by Pebble Beach’s Jack Neville.',tags:['Fun'],addr:'Pacific Grove Golf Links, 77 Asilomar Blvd, Pacific Grove, CA',site:'https://golf.com/news/inside-pacific-grove-golf-links-the-splendid-seaside-muni-five-miles-north-of-pebble-beach/'}
+ ]
+};
+let meal='dinner';
+function renderAlt(){
+  const L={breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',cocktails:'Cocktails',dive:'Dive bars',beer:'Beer',snacks:'Snacks',desserts:'Desserts',fun:'Fun'};
+  let h='<p class="alt-intro">Backups, swaps, and extra stops for when you’re in the mood for something else.</p><div class="meals">'+
+    Object.keys(L).map(k=>'<button class="meal" aria-pressed="'+(k===meal)+'" data-meal="'+k+'">'+L[k]+' <span class="alt-area">'+ALTS[k].length+'</span></button>').join('')+'</div><div class="list">';
+  h+=ALTS[meal].map(a=>'<div class="alt"><div class="alt-top"><div class="title">'+esc(a.name)+'</div><div class="alt-area">'+esc(a.area)+'</div></div>'+
+    '<div class="what">'+esc(a.what)+'</div><p class="note">'+esc(a.why)+'</p>'+
+    '<div class="chips">'+a.tags.map(t=>'<span class="tag'+(t==='Old-school'?' os':t==='Romantic'?' ro':'')+'">'+esc(t)+'</span>').join('')+'</div>'+actions(a)+'</div>').join('');
+  document.getElementById('v-alt').innerHTML=h+'</div>';
+}
+
+let done={}; try{done=JSON.parse(localStorage.getItem('mty-todo')||'{}')}catch(e){}
+function renderTodo(){
+  let h='';
+  TODO.forEach(g=>{
+    h+='<div class="grp">'+g.g+'</div><div class="tlist">'+g.items.map(t=>
+      '<label class="todo-item'+(done[t.id]?' done':'')+'" for="td-'+t.id+'"><input type="checkbox" id="td-'+t.id+'" data-id="'+t.id+'"'+(done[t.id]?' checked':'')+'><div class="body"><div class="title">'+esc(t.title)+'</div><div class="place">'+esc(t.note)+'</div>'+((t.site||t.phone)?actions(t):'')+'</div></label>').join('')+'</div>';
+  });
+  document.getElementById('v-todo').innerHTML=h;
+}
+
+/* ---------- header collapse ---------- */
+const hero=document.getElementById('hero'), root=document.documentElement;
+let heroH=0;
+function measure(){heroH=hero.offsetHeight;root.style.setProperty('--hero-h',heroH+'px');applyCollapse()}
+function applyCollapse(){
+  const c=heroH?Math.min(1,window.scrollY/heroH):0;
+  root.style.setProperty('--hero-o',(1-c).toFixed(3));
+  root.style.setProperty('--stuck',c>=1?1:0);
+}
+function collapsed(){return heroH && window.scrollY>=heroH-1}
+
+function showView(v){
+  const wasCollapsed=collapsed();
+  view=v;
+  ['itin','fc','alt','todo'].forEach(x=>{document.getElementById('v-'+x).hidden=x!==v;document.querySelector('[data-view="'+x+'"]').setAttribute('aria-selected',x===v)});
+  document.getElementById('days').hidden=v!=='itin';
+  measure();
+  window.scrollTo(0,wasCollapsed?heroH:0);
+  applyCollapse();
+}
+
+document.addEventListener('click',e=>{
+  const day=e.target.closest('.day');
+  if(day){sel=+day.dataset.i;renderDays();renderItin();if(view!=='itin')showView('itin');else{window.scrollTo(0,collapsed()?heroH:0)}return}
+  const ml=e.target.closest('.meal'); if(ml){meal=ml.dataset.meal;renderAlt();return}
+  const tab=e.target.closest('.tab'); if(tab){showView(tab.dataset.view);return}
+  const opt=e.target.closest('.opt');
+  if(opt){
+    const o=DAYS[sel].items[+opt.dataset.k].opts[+opt.dataset.j];
+    opt.closest('.body').querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-pressed',b===opt?'true':'false'));
+    document.getElementById('od-'+opt.dataset.k).innerHTML=optDetail(o);
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.matches('.todo-item input')){
+    done[e.target.dataset.id]=e.target.checked;
+    e.target.closest('.todo-item').classList.toggle('done',e.target.checked);
+    try{localStorage.setItem('mty-todo',JSON.stringify(done))}catch(err){}
+  }
+});
+window.addEventListener('scroll',applyCollapse,{passive:true});
+window.addEventListener('resize',measure);
+
+/* Refresh time-aware bits every minute (and when the phone wakes the tab). */
+function tick(){
+  const prev=NOW.iso; NOW=nowLA();
+  if(NOW.iso!==prev){const i=DAYS.findIndex(d=>d.iso===NOW.iso);if(i>=0)sel=i}
+  renderStatus();renderDays();if(view==='itin')renderItin();
+}
+setInterval(tick,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
+
+renderStatus();renderDays();renderItin();renderFc();renderAlt();renderTodo();measure();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+loadWeather();
+</script>
+</body>
+</html>
