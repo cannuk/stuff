@@ -2,7 +2,7 @@
 
 A basic [GitHub Pages](https://pages.github.com/) site for hosting pages and files.
 
-**Live at:** https://cannuk.github.io/stuff/
+**Live at:** https://sean.neden.name/stuff/
 
 ## How it works
 
