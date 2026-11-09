@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cabin">
 <title>Cabin</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,7 +88,7 @@ a{color:#ffd38a}a:hover{color:#ffe6b8}
 <script src="https://unpkg.com/idiomorph@0.3.0/dist/idiomorph.min.js"></script>
 <style>
 html, body { margin: 0; height: 100%; background: #05080d; overflow: hidden; }
-#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; touch-action: none; }
 #stage { width: 1920px; height: 1080px; flex: none; position: relative; overflow: hidden; --safeL: 0px; --safeR: 0px; }
 /* screens wider than 16:9 widen the stage instead of letterboxing it; the clock and weather stay clear of a notch */
 #stage div[style*="left: 60px; top: 44px"] { left: calc(60px + var(--safeL)) !important; }
@@ -119,7 +121,7 @@ html, body { margin: 0; height: 100%; background: #05080d; overflow: hidden; }
   <h2>Cabin controls</h2>
   <div id="controls"></div>
   <div class="row"><button class="act" id="lapse">Timelapse</button><button class="act" id="reset">Reset</button></div>
-  <p class="note">Move the mouse to scrub through the scene: further left or right goes faster, the middle holds still. Press P to show or hide this panel, F for full screen. Weather, tank and lights here are a snapshot; the TVs use live data.</p>
+  <p class="note">Move the mouse to scrub through the scene: further left or right goes faster, the middle holds still. On a phone, swipe the scene along; flick it to coast. Press P to show or hide this panel, F for full screen. Weather, tank and lights here are a snapshot; the TVs use live data.</p>
 </div>
 <template id="tpl">
 
@@ -7536,10 +7538,72 @@ function endScrub() {
 }
 addEventListener('mousemove', (e) => {
   if (e.target.closest && e.target.closest('#panel, #panelBtn')) return;
+  if (performance.now() - swipe.last < 1000) return;   // the mouse events a phone makes up after a tap
   scrub.x = e.clientX; scrub.last = performance.now();
   if (!scrub.on) { scrub.on = true; for (const a of scrollAnims()) a.pause(); scrub.raf = requestAnimationFrame(scrubTick); }
 });
 document.addEventListener('mouseleave', endScrub);
+
+// swipe (touch): the scene follows the finger, a flick coasts and slows to a stop, and 4 s after the last touch it hands
+// back to autoplay
+var swipe = { finger: null, last: 0 };
+function shiftBy(ms) {
+  for (const a of scrollAnims()) {
+    const dur = a.effect.getComputedTiming().duration;
+    a.currentTime = (((a.currentTime || 0) + ms) % dur + dur) % dur;
+  }
+}
+// screen px -> animation ms, so the property layer moves exactly with the finger
+function msPerPx() {
+  const a = scrollAnims().find((x) => x.effect.target && x.effect.target.dataset.layer === 'main');
+  if (!a) return 0;
+  const tile = parseFloat(getComputedStyle(a.effect.target).getPropertyValue('--tile')) || 5200;
+  return a.effect.getComputedTiming().duration / tile / (parseFloat(stage.style.zoom) || 1);
+}
+function swipeIdle() {
+  if (swipe.finger) return;
+  if (performance.now() - swipe.last > 4000) return endScrub();
+  scrub.raf = requestAnimationFrame(swipeIdle);
+}
+addEventListener('touchstart', (e) => {
+  if (e.target.closest && e.target.closest('#panel, #panelBtn')) return;
+  cancelAnimationFrame(scrub.raf);
+  scrub.on = true;   // renders keep the scroll paused while this is on
+  for (const a of scrollAnims()) a.pause();
+  swipe.finger = { x: e.touches[0].clientX, t: e.timeStamp, v: 0 };
+  swipe.last = performance.now();
+  hint.textContent = '◀ swipe ▶';
+  hint.style.opacity = '1';
+}, { passive: true });
+addEventListener('touchmove', (e) => {
+  const f = swipe.finger;
+  if (!f) return;
+  e.preventDefault();
+  const x = e.touches[0].clientX, dx = x - f.x, dt = Math.max(1, e.timeStamp - f.t);
+  shiftBy(-dx * msPerPx());
+  f.v = 0.8 * (-dx / dt) + 0.2 * f.v;   // px per ms, positive = onward through the scene
+  f.x = x; f.t = e.timeStamp;
+  swipe.last = performance.now();
+}, { passive: false });
+addEventListener('touchcancel', () => { if (swipe.finger) { swipe.finger = null; swipe.last = performance.now(); swipeIdle(); } });
+addEventListener('touchend', (e) => {
+  const f = swipe.finger;
+  if (!f || e.touches.length) return;
+  swipe.finger = null;
+  swipe.last = performance.now();
+  // a finger held still before lifting doesn't fling
+  let v = e.timeStamp - f.t > 80 ? 0 : f.v, prev = 0;
+  const coast = (t) => {
+    const dt = prev ? Math.min(64, t - prev) : 16;
+    prev = t;
+    v *= Math.pow(0.996, dt);
+    if (Math.abs(v) < 0.02) return swipeIdle();
+    shiftBy(v * dt * msPerPx());
+    swipe.last = performance.now();
+    scrub.raf = requestAnimationFrame(coast);
+  };
+  scrub.raf = requestAnimationFrame(coast);
+});
 
 if (comp.componentDidMount) comp.componentDidMount();
 draw();
