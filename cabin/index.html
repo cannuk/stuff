@@ -6807,12 +6807,14 @@ class Component extends DCLogic {
     clearTimeout(this.lunaKick);
     clearInterval(this.lunaTimer);
   }
-  // two or three flocks per loop, each at a random distance
+  // two or three flocks, each at a random distance, picked once: each one keeps crossing on its own cycle (re-picking them
+  // every loop swapped out flocks that were still mid-flight, so birds vanished in the air)
   pickBirds() {
-    let s = ((this.seed || 7) + ((this.state && this.state.loop) || 0) * 104729 + 17) >>> 0;
+    if (this._flocks) return this._flocks;
+    let s = ((this.seed || 7) + 17) >>> 0;
     const rnd = () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
     const n = 2 + Math.floor(rnd() * 2);
-    return Array.from({ length: n }, (_, i) => {
+    const flocks = Array.from({ length: n }, (_, i) => {
       const depth = i === 0 ? rnd() * 0.35 : i === 1 ? 0.65 + rnd() * 0.35 : rnd();   // always one far-ish and one near-ish
       const scale = 0.32 + depth * depth * 1.1;
       const y = 470 - depth * 300 + (rnd() - 0.5) * 80;                                   // far birds sit low near the treeline
@@ -6829,6 +6831,8 @@ class Component extends DCLogic {
         place: `translate(0 ${y.toFixed(0)}) scale(${(right ? -scale : scale).toFixed(2)} ${scale.toFixed(2)})`, opacity: (0.45 + depth * 0.55).toFixed(2),
         dur: dur.toFixed(1) + 's', delay: (-rnd() * dur).toFixed(1) + 's', flap: (0.3 + depth * 0.35).toFixed(2) + 's' };
     });
+    if (this.seed) this._flocks = flocks;
+    return flocks;
   }
   // the ground line of the property (the terrain path), sampled so animals can stand on it
   groundY(x) {
