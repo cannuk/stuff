@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Cabin</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,11 +87,15 @@ a{color:#ffd38a}a:hover{color:#ffe6b8}
 <style>
 html, body { margin: 0; height: 100%; background: #05080d; overflow: hidden; }
 #viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
-#stage { width: 1920px; height: 1080px; flex: none; position: relative; overflow: hidden; }
-#panelBtn { position: fixed; top: 14px; right: 14px; z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 0;
+#stage { width: 1920px; height: 1080px; flex: none; position: relative; overflow: hidden; --safeL: 0px; --safeR: 0px; }
+/* screens wider than 16:9 widen the stage instead of letterboxing it; the clock and weather stay clear of a notch */
+#stage div[style*="left: 60px; top: 44px"] { left: calc(60px + var(--safeL)) !important; }
+#stage div[style*="right: 60px; top: 44px"] { right: calc(60px + var(--safeR)) !important; }
+#safeProbe { position: fixed; visibility: hidden; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+#panelBtn { position: fixed; bottom: calc(14px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); z-index: 10; width: 40px; height: 40px; border-radius: 50%; border: 0;
   background: rgba(10, 16, 24, .6); color: #fff; font-size: 20px; cursor: pointer; opacity: .35; transition: opacity .2s; }
 #panelBtn:hover, #panelBtn:focus-visible { opacity: 1; }
-#panel { position: fixed; top: 64px; right: 14px; z-index: 10; width: min(300px, calc(100vw - 28px)); max-height: calc(100vh - 80px);
+#panel { position: fixed; bottom: calc(64px + env(safe-area-inset-bottom)); right: calc(14px + env(safe-area-inset-right)); z-index: 10; width: min(300px, calc(100vw - 28px)); max-height: calc(100vh - 80px);
   overflow: auto; box-sizing: border-box; padding: 14px 16px; border-radius: 14px; background: rgba(12, 18, 26, .92); color: #e8eef2;
   font: 14px/1.4 -apple-system, system-ui, sans-serif; box-shadow: 0 10px 30px rgba(0, 0, 0, .4); }
 #panel[hidden] { display: none; }
@@ -107,6 +113,7 @@ html, body { margin: 0; height: 100%; background: #05080d; overflow: hidden; }
 </head>
 <body>
 <div id="viewport"><div id="stage"></div></div>
+<div id="safeProbe"></div>
 <button id="panelBtn" aria-label="Show controls" aria-expanded="false" aria-controls="panel">⚙</button>
 <div id="panel" hidden>
   <h2>Cabin controls</h2>
@@ -7364,7 +7371,10 @@ const defaults = Object.fromEntries(Object.entries(PROPS).filter(([k]) => !k.sta
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
 const comp = new Component({ ...defaults, ...saved });
-const tplFull = document.getElementById('tpl').innerHTML;
+// the stage can be wider than the design's 1920 (see fit), so its frame and the fixed sky layers stretch to it
+const tplFull = document.getElementById('tpl').innerHTML
+  .replace('position: relative; width: 1920px; height: 1080px;', 'position: relative; width: 100%; height: 1080px;')
+  .replaceAll('<svg width="1920" height="1080" viewBox="0 0 1920 1080"', '<svg width="100%" height="1080" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"');
 document.getElementById('tpl').remove();
 // The flattened view only needs each flattened layer's live parts (the images carry the rest). Keeping the static SVG
 // there, hidden, cost over 1.5 GB in Safari (every <use> clones its symbol), so iOS gave up on the page. This keeps the
@@ -7443,7 +7453,13 @@ function draw() {
   first = false;
 }
 function fit() {
-  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  // wider than 16:9 (a phone on its side): widen the stage to fill the screen rather than pillarbox it
+  const w = Math.max(1920, Math.round(1080 * innerWidth / innerHeight));
+  stage.style.width = w + 'px';
+  const s = Math.min(innerWidth / w, innerHeight / 1080);
+  const probe = getComputedStyle(document.getElementById('safeProbe'));
+  stage.style.setProperty('--safeL', parseFloat(probe.paddingLeft) / s + 'px');
+  stage.style.setProperty('--safeR', parseFloat(probe.paddingRight) / s + 'px');
   // zoom, not a scale transform: WebKit draws a transformed stage's animated layers at full 1920 size and then shrinks
   // them (about 1 GB of layers on a phone); zoomed, they're drawn at the size they're shown
   stage.style.zoom = s;
