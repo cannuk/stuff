@@ -90,6 +90,9 @@ a{color:#ffd38a}a:hover{color:#ffe6b8}
 html, body { margin: 0; height: 100%; background: #05080d; overflow: hidden; }
 /* iOS Safari enlarges text in landscape ("text autosizing"), which overflowed the forecast tiles and cut labels short */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* the sun rays hold steady: each ray's own shimmer re-blurs the whole sunburst every frame, which Safari does on the CPU
+   (the page ran at 2 frames a second while the sun was up) */
+.ray { animation: none !important; }
 /* the flattened view's layer SVGs are pruned to their live parts (see tplFlat), so nothing is left to hide; and Safari
    skips the visible live parts of a hidden SVG under zoom, which dropped the cottage, vines, maples and path lights */
 .flatSvg { visibility: visible !important; }
@@ -7459,7 +7462,7 @@ function draw() {
     pinned.add(a);
     if (a.animationName === 'scroll' && !first && scrollRef()) a.currentTime = scrollRef().currentTime;
     else a.startTime = 0;
-    if (scrub.on && a.animationName === 'scroll') a.pause();
+    if (scrub.on) holdAnim(a);
   }
   first = false;
 }
@@ -7526,6 +7529,20 @@ hint.id = 'scrubHint';
 hint.textContent = '◀ scrub ▶';
 document.body.appendChild(hint);
 const scrollAnims = () => document.getAnimations().filter((a) => a.animationName === 'scroll');
+// while scrubbing, everything else (shimmers, flapping, the feeder birds...) holds still too: Safari repaints the scene for
+// each of those frames on the main thread, which left the scrubber a few frames a second
+const held = new Set();
+function holdAnim(a) {
+  if (a.playState !== 'running') return;
+  a.pause();
+  if (a.animationName !== 'scroll') held.add(a);
+}
+function holdScene() { for (const a of document.getAnimations()) holdAnim(a); }
+function releaseScene() {
+  for (const a of scrollAnims()) a.play();
+  for (const a of held) if (a.effect && a.effect.target && a.effect.target.isConnected) a.play();
+  held.clear();
+}
 function scrubTick(t) {
   if (!scrub.on) return;
   const dt = Math.min(64, t - (scrub.t || t)); scrub.t = t;
@@ -7543,13 +7560,13 @@ function scrubTick(t) {
 }
 function endScrub() {
   scrub.on = false; scrub.t = 0; hint.style.opacity = '0';
-  for (const a of scrollAnims()) a.play();
+  releaseScene();
 }
 addEventListener('mousemove', (e) => {
   if (e.target.closest && e.target.closest('#panel, #panelBtn')) return;
   if (performance.now() - swipe.last < 1000) return;   // the mouse events a phone makes up after a tap
   scrub.x = e.clientX; scrub.last = performance.now();
-  if (!scrub.on) { scrub.on = true; for (const a of scrollAnims()) a.pause(); scrub.raf = requestAnimationFrame(scrubTick); }
+  if (!scrub.on) { scrub.on = true; holdScene(); scrub.raf = requestAnimationFrame(scrubTick); }
 });
 document.addEventListener('mouseleave', endScrub);
 
@@ -7577,8 +7594,8 @@ function swipeIdle() {
 addEventListener('touchstart', (e) => {
   if (e.target.closest && e.target.closest('#panel, #panelBtn')) return;
   cancelAnimationFrame(scrub.raf);
-  scrub.on = true;   // renders keep the scroll paused while this is on
-  for (const a of scrollAnims()) a.pause();
+  scrub.on = true;   // renders keep the scene paused while this is on
+  holdScene();
   swipe.finger = { x: e.touches[0].clientX, t: e.timeStamp, v: 0 };
   swipe.last = performance.now();
   hint.textContent = '◀ swipe ▶';
