@@ -90,6 +90,9 @@ a{color:#ffd38a}a:hover{color:#ffe6b8}
 html, body { margin: 0; height: 100%; background: #05080d; overflow: hidden; }
 /* iOS Safari enlarges text in landscape ("text autosizing"), which overflowed the forecast tiles and cut labels short */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* the flattened view's layer SVGs are pruned to their live parts (see tplFlat), so nothing is left to hide; and Safari
+   skips the visible live parts of a hidden SVG under zoom, which dropped the cottage, vines, maples and path lights */
+.flatSvg { visibility: visible !important; }
 #viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; touch-action: none; }
 #stage { width: 1920px; height: 1080px; flex: none; position: relative; overflow: hidden; --safeL: 0px; --safeR: 0px; }
 /* screens wider than 16:9 widen the stage instead of letterboxing it; the clock and weather stay clear of a notch */
