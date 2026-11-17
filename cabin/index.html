@@ -6595,7 +6595,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         </div>
         <div style="flex: none; width: 2px; border-radius: 1px; background: rgba(255,255,255,.28);"></div>
         <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
-          <div style="font-size: 18px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">Used today</div>
+          <div style="font-size: 18px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">Today</div>
           <div style="font-size: 40px; font-weight: 500; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{usedToday}}</div>
           <div style="margin-top: 6px; font-size: 15px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; opacity: .6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">This month</div>
           <div style="font-size: 21px; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{usedMonth}}</div>
@@ -7327,9 +7327,9 @@ class Component extends DCLogic {
       strands,
       pumpOn,
       showSmoke,
-      tankLabel: pumpOn ? 'Tank 1 · filling' : 'Tank 1',
+      tankLabel: 'Main tank',
       tankSub: pumpOn ? '+' + Math.round(ranMin * PUMP.rateGpm) + ' gal' : '933 gal',
-      tankSubHead: pumpOn ? 'Pumped' : 'In tank',
+      tankSubHead: pumpOn ? 'Filling' : 'Gallons',
       usedToday: '46 gal',
       usedMonth: '1,120 gal',
       time: fmtTime(mins),
