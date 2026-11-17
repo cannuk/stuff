@@ -6589,7 +6589,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       <div style="position: absolute; left: {{k.left}}; top: 494px; width: 480px; padding: 16px 24px; box-sizing: border-box; border-radius: 20px; background: rgba(6,12,20,.55); display: flex; align-items: stretch; gap: 24px;">
         <div style="flex: 0 0 180px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 5px;">
           <div style="font-size: 18px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{tankLabel}}</div>
-          <div style="font-size: 40px; font-weight: 500; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">≈ 43.7%</div>
+          <div style="font-size: 40px; font-weight: 500; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{tankBig}}</div>
           <div style="margin-top: 6px; font-size: 15px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; opacity: .6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{tankSubHead}}</div>
           <div style="font-size: 21px; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;">{{tankSub}}</div>
         </div>
@@ -6634,10 +6634,11 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         <div style="width: 82px; padding: 10px 0; border-radius: 14px; background: rgba(6,12,20,.42); display: flex; flex-direction: column; align-items: center; gap: 4px;">
           <div style="font-size: 19px; font-weight: 500;">{{d.day}}</div>
           <div style="display: flex; align-items: center; gap: 4px;">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="9" cy="8" r="3" stroke="#ffd38a"></circle>
-            <path d="M7 18h10a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 7 18z"></path>
-          </svg>
+          <sc-if value="{{d.ic.sun}}" hint-placeholder-val="{{ false }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffd38a" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"></path></svg></sc-if>
+          <sc-if value="{{d.ic.partly}}" hint-placeholder-val="{{ true }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="#ffd38a"></circle><path d="M7 18h10a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 7 18z"></path></svg></sc-if>
+          <sc-if value="{{d.ic.cloud}}" hint-placeholder-val="{{ false }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 18h11a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.6 1.6A3.2 3.2 0 0 0 6.5 18z"></path></svg></sc-if>
+          <sc-if value="{{d.ic.rain}}" hint-placeholder-val="{{ false }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 14h11a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.6 1.6A3.2 3.2 0 0 0 6.5 14z"></path><path d="M8 17l-1 3M12 17l-1 3M16 17l-1 3" stroke="#81d4fa"></path></svg></sc-if>
+          <sc-if value="{{d.ic.fog}}" hint-placeholder-val="{{ false }}"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M2 12h20M4 16h16M7 20h10"></path></svg></sc-if>
           <!-- the day's chance of rain, only from 10% -->
           <sc-if value="{{d.rainOn}}" hint-placeholder-val="{{ false }}"><span style="font-size: 15px; font-weight: 600; color: #9ad8ff;">{{d.rain}}%</span></sc-if>
           </div>
@@ -6681,12 +6682,12 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         </svg>
       </sc-if>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-        <div style="font-size: 82px; font-weight: 300; line-height: 1;">74°</div>
+        <div style="font-size: 82px; font-weight: 300; line-height: 1;">{{tempLocal}}</div>
         <div style="font-size: 17px; font-weight: 500; opacity: .7;">Local</div>
       </div>
       <!-- the town's reading (PurpleAir, Occidental Library) beside the pool house one, smaller -->
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-left: -10px; align-self: flex-end;">
-        <div style="font-size: 34px; font-weight: 300; line-height: 1; opacity: .85;">67°</div>
+        <div style="font-size: 34px; font-weight: 300; line-height: 1; opacity: .85;">{{tempTown}}</div>
         <div style="font-size: 17px; font-weight: 500; opacity: .7;">Occidental</div>
       </div>
     </div>
@@ -6750,6 +6751,14 @@ class Component extends DCLogic {
   flatImages() { return /*flat*/{"day":{"mid":"flat/flat_0c2e0d7a618030be.png","main0":"flat/flat_d9f49e708b4d26a2.png","main1":"flat/flat_8bb1b55bb46a5768.png","main2":"flat/flat_239349893bfd1013.png","main3":"flat/flat_956b30599fd9d90c.png","us":"flat/flat_39d6485067ebca8e.png"},"dusk":{"mid":"flat/flat_601901bab523d953.png","main0":"flat/flat_541dedf9ccc61182.png","main1":"flat/flat_2bf812c63e0cdf9e.png","main2":"flat/flat_3df4a5a6a453d9df.png","main3":"flat/flat_b936809a6aee5d28.png","us":"flat/flat_aa51bc73dc899bf2.png"},"dusklit":{"mid":"flat/flat_c6e0687ad5cf0409.png","main0":"flat/flat_d1d793e7e5c99537.png","main1":"flat/flat_f8eb01dbae31a8d6.png","main2":"flat/flat_962929e1dfc92268.png","main3":"flat/flat_db2b98a95b98aa0b.png","us":"flat/flat_aa51bc73dc899bf2.png"},"night":{"mid":"flat/flat_5b121668c1b2457e.png","main0":"flat/flat_c40c9cdc1629ad54.png","main1":"flat/flat_244102c09107baf5.png","main2":"flat/flat_f4dcf852b983769a.png","main3":"flat/flat_2c39c97be97880a4.png","us":"flat/flat_031139e2e21c8840.png"}}/*/flat*/; }
   componentDidMount() {
     this.timer = setInterval(() => this.setState({ now: Date.now() }), 30000);
+    // the live Cabin TV feed (Node-RED, published at feed.ctrees.net), polled like the TVs do; until it answers, or when it
+    // can't be reached, the snapshot in renderVals stands in
+    const poll = () => fetch('https://feed.ctrees.net/cabin-tv', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((feed) => { if (feed) this.setState({ feed, feedAt: Date.now() }); })
+      .catch(() => {});
+    poll();
+    this.feedTimer = setInterval(poll, 15000);
     // timelapse: a whole day in a minute, redrawn twice a second while the tweak is on
     this.lapseTimer = setInterval(() => { if (this.props.timelapse === 'on') this.setState({ lapse: Date.now() }); }, 500);
     // new animal picks every loop of the property layer
@@ -6765,6 +6774,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     clearInterval(this.timer);
+    clearInterval(this.feedTimer);
     clearInterval(this.lapseTimer);
     clearInterval(this.loopTimer);
     clearTimeout(this.lunaKick);
@@ -6848,8 +6858,23 @@ class Component extends DCLogic {
   renderVals() {
     // Live inputs. On the Roku these come from Home Assistant (sun.sun and the NWS weather entity);
     // here they are today's values: sunrise 7:29 AM, sunset 6:19 PM, NWS reporting sunny.
-    const now = new Date(this.state && this.state.now ? this.state.now : Date.now());
-    const SUNRISE = 7 * 60 + 29, SUNSET = 18 * 60 + 19, LIVE_WEATHER = 'clear';
+    // The live feed (see componentDidMount), unless it's gone quiet for 2 minutes
+    const F = this.state && this.state.feed && Date.now() - this.state.feedAt < 120000 ? this.state.feed : null;
+    // the cabin's clock (Pacific), whatever the viewer's time zone: \`now\` carries the cabin's wall time in its local fields,
+    // and shiftMs takes it back to the real instant for the sky
+    const shiftMs = (() => {
+      try {
+        const q = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hourCycle: 'h23', year: 'numeric', month: 'numeric',
+          day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(new Date()).map((x) => [x.type, x.value]));
+        const t = Date.now();
+        return Math.round((Date.UTC(+q.year, q.month - 1, +q.day, +q.hour, +q.minute, +q.second) - (t - new Date(t).getTimezoneOffset() * 60000)) / 60000) * 60000;
+      } catch (e) { return 0; }
+    })();
+    const now = new Date((this.state && this.state.now ? this.state.now : Date.now()) + shiftMs);
+    // HA's condition (as the TVs map it) to the scene's weather
+    const feedWx = (c) => c === 'partlycloudy' ? 'partly cloudy' : c === 'cloudy' || c === 'exceptional' ? 'cloudy' : c === 'fog' ? 'fog'
+      : ['rainy', 'pouring', 'lightning', 'lightning-rainy', 'snowy', 'snowy-rainy', 'hail'].includes(c) ? 'rain' : 'clear';
+    const SUNRISE = 7 * 60 + 29, SUNSET = 18 * 60 + 19, LIVE_WEATHER = F && F.wx ? feedWx(F.wx.cond) : 'clear';
     // the hour tweak scrubs the clock (24 = live)
     const hourProp = this.props.hour ?? 24;
     // timelapse: one day per 60 s, starting at 4 AM so it opens on the pre-dawn sky
@@ -6864,10 +6889,14 @@ class Component extends DCLogic {
       'golden hour': [5, false, 248], sunset: [-1, false, 255], dusk: [-5, false, 258], night: [-30, false, 300] };
     let elev, rising, sunAz;
     if (!lapse && todProp !== 'live' && PRESETS[todProp]) { [elev, rising, sunAz] = PRESETS[todProp]; }
+    // live: the sun where HA says it is
+    else if (!lapse && hourProp >= 24 && F && F.sun && F.sun.elevation != null && F.sun.azimuth != null) {
+      elev = F.sun.elevation; sunAz = F.sun.azimuth; rising = sunAz < 180;
+    }
     else {
       // the sun's real position (suncalc's solar formulas; Santa Rosa area). On the Roku it comes from HA's sun.sun.
       const when = new Date(now); when.setHours(0, 0, 0, 0); when.setMinutes(mins);
-      const rad = Math.PI / 180, ee = rad * 23.4397, d = when.getTime() / 864e5 - 0.5 + 2440588 - 2451545;
+      const rad = Math.PI / 180, ee = rad * 23.4397, d = (when.getTime() - shiftMs) / 864e5 - 0.5 + 2440588 - 2451545;
       const M = rad * (357.5291 + 0.98560028 * d);
       const L = M + rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) + rad * 102.9372 + Math.PI;
       const dec = Math.asin(Math.sin(ee) * Math.sin(L)), ra = Math.atan2(Math.sin(L) * Math.cos(ee), Math.cos(L));
@@ -6927,7 +6956,7 @@ class Component extends DCLogic {
     const fmtTime = (m) => { const h = Math.floor(m / 60), mm = String(m % 60).padStart(2, '0'); return ((h + 11) % 12 + 1) + ':' + mm + (h < 12 ? ' AM' : ' PM'); };
     const isNight = todSel === 'night';
     const wxLabel = { clear: isNight ? 'Clear' : 'Sunny', 'partly cloudy': 'Partly cloudy', cloudy: 'Cloudy', rain: 'Rain', fog: 'Fog' }[wx];
-    const nextSun = (mins < SUNRISE || mins >= SUNSET) ? 'Sunrise ' + fmtTime(SUNRISE) : 'Sunset ' + fmtTime(SUNSET);
+    const nextSun = F && F.sun && F.sun.next ? F.sun.next : (mins < SUNRISE || mins >= SUNSET) ? 'Sunrise ' + fmtTime(SUNRISE) : 'Sunset ' + fmtTime(SUNSET);
     // Sun follows an arc across the day; low on the horizon at dusk/dawn; the moon at night.
     const f = Math.min(1, Math.max(0, (mins - SUNRISE) / (SUNSET - SUNRISE)));
     let sunX = skyX(sunAz), sunY = skyY(elev);
@@ -6936,7 +6965,7 @@ class Component extends DCLogic {
     // west on the right, hidden below the horizon. On the Roku its position comes from the Cabin TV feed instead.
     const moonPos = (() => {
       const when = new Date(now); when.setHours(0, 0, 0, 0); when.setMinutes(mins);
-      const rad = Math.PI / 180, ee = rad * 23.4397, d = when.getTime() / 864e5 - 0.5 + 2440588 - 2451545;
+      const rad = Math.PI / 180, ee = rad * 23.4397, d = (when.getTime() - shiftMs) / 864e5 - 0.5 + 2440588 - 2451545;
       const L = rad * (218.316 + 13.176396 * d), M = rad * (134.963 + 13.064993 * d), F = rad * (93.272 + 13.229350 * d);
       const l = L + rad * 6.289 * Math.sin(M), b = rad * 5.128 * Math.sin(F);
       const ra = Math.atan2(Math.sin(l) * Math.cos(ee) - Math.tan(b) * Math.sin(ee), Math.cos(l));
@@ -6954,7 +6983,7 @@ class Component extends DCLogic {
     // preset shows 10 PM tonight's sky. Fainter stars drop out with twilight and with a bright, high moon.
     const starSky = (() => {
       const t = new Date(now); t.setHours(0, 0, 0, 0); t.setMinutes(forcedNight ? 22 * 60 : mins);
-      const rad = Math.PI / 180, d = t.getTime() / 864e5 - 0.5 + 2440588 - 2451545;
+      const rad = Math.PI / 180, d = (t.getTime() - shiftMs) / 864e5 - 0.5 + 2440588 - 2451545;
       const phi = rad * 38.44, lst = rad * (280.16 + 360.9856235 * d) - rad * 122.71;
       const sp = Math.sin(phi), cp = Math.cos(phi);
       const proj = (ra10, dec10) => {
@@ -6968,7 +6997,7 @@ class Component extends DCLogic {
     // moon phase from the date: 0 = new, .5 = full (known new moon 2000-01-06 18:14 UTC, synodic month 29.530589 d)
     const phaseNames = { new: 0, 'waxing crescent': 0.125, 'first quarter': 0.25, 'waxing gibbous': 0.375, full: 0.5, 'waning gibbous': 0.625, 'last quarter': 0.75, 'waning crescent': 0.875 };
     const mpProp = this.props.moonPhase ?? 'live';
-    const moonPhase = typeof mpProp === 'number' ? mpProp : mpProp !== 'live' ? phaseNames[mpProp] : ((((now.getTime() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) / 29.530589) % 1 + 1) % 1;
+    const moonPhase = typeof mpProp === 'number' ? mpProp : mpProp !== 'live' ? phaseNames[mpProp] : ((((now.getTime() - shiftMs - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) / 29.530589) % 1 + 1) % 1;
     const moonLitPath = (() => {
       // lit limb is a half circle (right side while waxing); the terminator is a half ellipse whose width follows cos(phase)
       const r = 78, cx = sunX, cy = sunY, k = Math.cos(2 * Math.PI * moonPhase), rx = Math.abs(k) * r;
@@ -6996,20 +7025,34 @@ class Component extends DCLogic {
     const lp = this.props.lights ?? 'live';
     const allOn = { poolLed: true, poolLedRgb: null, poolLight: true, poolHouseStrings: true, campStrings: true, cabinStrings: true };
     const allOff = { poolLed: false, poolLedRgb: null, poolLight: false, poolHouseStrings: false, campStrings: false, cabinStrings: false };
-    const L = lp === 'all on' ? allOn : lp === 'all off' ? allOff : LIVE_LIGHTS;
+    const L = lp === 'all on' ? allOn : lp === 'all off' ? allOff : F && F.lights ? { ...allOff, ...F.lights } : LIVE_LIGHTS;
     const lights = { ...L, poolLedOff: !L.poolLed };
     // Spring pump (switch.pump_timer_socket_1): off in today's snapshot
     const pumpProp = this.props.pump ?? 'on';
-    const pumpOn = pumpProp === 'on' ? true : pumpProp === 'off' ? false : false;
+    const FP = (F && F.pump) || null;
+    const pumpOn = pumpProp === 'on' ? true : pumpProp === 'off' ? false : !!(FP && FP.on);
     // Pump run: rate and cycle length from Node-RED (6 gal/min, 60 min). While running, minutes since the switch
     // turned on, gallons pushed up the hill so far and time left; idle, the last run's gallons.
     const PUMP = { rateGpm: 3.25, cycleMinutes: 60, lastCycleGal: 195, previewMinutes: 23 };   // 3.25 GPM reaches our tank (pump splits with the neighbor's)
-    const ranMin = PUMP.previewMinutes;
-    const pumpRun = pumpOn
+    if (FP) Object.assign(PUMP, { rateGpm: FP.rateGpm ?? PUMP.rateGpm, cycleMinutes: FP.cycleMinutes ?? PUMP.cycleMinutes, lastCycleGal: FP.lastCycleGal });
+    const ranMin = FP && FP.on && FP.startedAt ? Math.max(0, Math.floor((Date.now() / 1000 - FP.startedAt) / 60)) : PUMP.previewMinutes;
+    const gal = (v) => Math.max(0, Math.round(v)).toLocaleString('en-US') + ' gal';
+    const ago = (epoch) => {
+      const sec = Date.now() / 1000 - epoch;
+      if (sec < 3600) { const n = Math.floor(sec / 60); return n <= 1 ? 'Just now' : n + ' min ago'; }
+      if (sec < 86400) { const n = Math.floor(sec / 3600); return n === 1 ? '1 hour ago' : n + ' hours ago'; }
+      const n = Math.floor(sec / 86400); return n === 1 ? '1 day ago' : n + ' days ago';
+    };
+    const pumpRun = FP && pumpProp === 'live'
+      ? (FP.on && FP.startedAt
+        ? { big: 'Running · ' + ranMin + ' min', sub: FP.cycleMinutes == null ? '' : FP.cycleMinutes > ranMin ? (FP.cycleMinutes - ranMin) + ' min left in this cycle' : 'Past the ' + FP.cycleMinutes + ' min cycle' }
+        : { big: FP.on ? 'Running now' : FP.lastStop ? ago(FP.lastStop) : '—',
+            sub: [FP.lastCycleGal != null ? gal(FP.lastCycleGal) + ' last run' : '', FP.gpm != null ? 'refill ' + FP.gpm.toFixed(3) + ' gal/min' : ''].filter(Boolean).join(' · ') })
+      : pumpOn
       ? { big: 'Running · ' + ranMin + ' min', sub: Math.max(0, PUMP.cycleMinutes - ranMin) + ' min left in this cycle' }
       : { big: '3 days ago', sub: PUMP.lastCycleGal + ' gal last run · refill 0.116 gal/min' };
     // Chimney smoke below 50°F (pool house air temperature; 74° in today's snapshot)
-    const AIR_TEMP = 74;
+    const AIR_TEMP = F && F.wx && F.wx.temp != null ? F.wx.temp : 74;
     const smokeProp = this.props.chimney ?? 'live';
     const showSmoke = smokeProp === 'on' ? true : smokeProp === 'off' ? false : AIR_TEMP < 50;
     // String-light strands: each span is a sagging wire with bulbs spaced along it.
@@ -7042,20 +7085,25 @@ class Component extends DCLogic {
       night: { ...base, skyTop: '#060a1b', skyMid: '#111938', skyBot: '#27395b', sun: '#e6ebf7', far: '#19213f', mid: '#10192b', hill: '#1a2b33', near: '#0a131c', ground: '#0c1812', fg: '#0a0605', cabin: '#4a463f', cottage: '#3e2b20', cabinDark: '#1a110c', roof: '#120c0e', window: '#ffb44f', smoke: '#6d7690', tank: '#2e443b', tankDark: '#121c18', tent: '#7d7363', tentDark: '#2c2720', palm: '#10241a', palmTrunk: '#2e2318', pool: '#163a48', bird: '#121722', poolEdge: '#7f8a90' }
     };
     const speed = this.props.scrollSpeed ?? 45;
-    const pct = 43.7;
+    const FT = (F && F.tank) || null;
+    const tankLive = !FT || FT.pct != null;
+    const pct = FT ? (FT.pct ?? FT.lastGoodPct ?? 0) : 43.7;
     const levelH = Math.round(42 * pct / 100);
     // Spring stats (same formula as the Pump dashboard's "Next cycle"): next pump = last stop + cycle gallons / refill rate
-    const SPRING = { gpm: 0.116, lastStop: 1792738866, cycleGal: 360 };
-    const minPerGal = (1 / SPRING.gpm).toFixed(1);
+    const SPRING = FP ? { gpm: FP.gpm, lastStop: FP.lastStop, cycleGal: FP.lastCycleGal } : { gpm: 0.116, lastStop: 1792738866, cycleGal: 360 };
+    const springOk = SPRING.gpm > 0;
+    const minPerGal = springOk ? (1 / SPRING.gpm).toFixed(1) : '';
     const nextPump = new Date((SPRING.lastStop + (SPRING.cycleGal / SPRING.gpm) * 60) * 1000);
-    const nextTxt = nextPump.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' }).replace(',', '');
-    const springNext = nextPump.getTime() < now.getTime() ? 'Next pump overdue · due ' + nextTxt : 'Next pump ~' + nextTxt;
+    const nextTxt = springOk && SPRING.lastStop && SPRING.cycleGal
+      ? nextPump.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', weekday: 'short', hour: 'numeric', minute: '2-digit' }).replace(',', '') : '';
+    const springNext = !nextTxt ? '' : nextPump.getTime() < Date.now() ? 'Next pump overdue · due ' + nextTxt : 'Next pump ~' + nextTxt;
     const stops = [
-      { x: 550, w: 440, top: 812, label: 'Spring', big: SPRING.gpm.toFixed(3) + ' gal/min', sub: minPerGal + ' min per gallon', sub2: springNext },
+      { x: 550, w: 440, top: 812, label: 'Spring', big: springOk ? SPRING.gpm.toFixed(3) + ' gal/min' : '—', sub: springOk ? minPerGal + ' min per gallon' : '', sub2: springNext },
       { x: 1130, w: 440, label: 'Camp · Spring pump', big: pumpRun.big, sub: pumpRun.sub },
       { x: 2055, w: 200, top: 836, label: 'Cottage', big: '', sub: '' },
       { x: 3220, w: 200, top: 756, label: 'Cabin', big: '', sub: '' },
-      { x: 4200, w: 440, top: 800, label: 'Pool house', big: 'Pool 67°', sub: 'Air 74° · 40% humidity' }
+      { x: 4200, w: 440, top: 800, label: 'Pool house', big: F && F.pool && F.pool.temp != null ? 'Pool ' + Math.round(F.pool.temp) + '°' : 'Pool 67°',
+        sub: F && F.wx && F.wx.temp != null ? 'Air ' + Math.round(F.wx.temp) + '°' + (F.wx.hum != null ? ' · ' + Math.round(F.wx.hum) + '% humidity' : '') : 'Air 74° · 40% humidity' }
     ];
     const cards = [0, 5200].flatMap((off) => stops.map((s) => ({
       left: (s.x + off - s.w / 2) + 'px', width: s.w + 'px', top: (s.top || 890) + 'px', align: s.big ? 'flex-start' : 'center',
@@ -7064,8 +7112,13 @@ class Component extends DCLogic {
     // centred under the tank farm (tanks span x 687 to 973 on the background layer).
     // The tank hill sits 150px left of where it was, so Camp and the rest of the property now trail it to the right.
     const tankCards = [0, 2600].map((off) => ({ left: (830 + off - 240) + 'px' }));   // 480 wide, centred on x 830 like the old 360 one
-    const showForecastText = true;   // the snapshot has NWS's text for the period (the TVs get it live)
-    const hourlyLabel = 'Patchy Fog';   // NWS's hourly forecast label for this hour (the TVs get it live)
+    // NWS's text for the period and its label for this hour (the snapshot has today's)
+    const forecastText = F ? (F.forecastFull || F.forecastText || '') : 'Areas of fog before 10am. Mostly sunny. High near 58, with temperatures falling to around 54 in the afternoon. West wind 1 to 5 mph.';
+    const showForecastText = !!forecastText;
+    const hourlyLabel = F ? (F.wx && F.wx.hourlyLabel) || '' : 'Patchy Fog';
+    // the day's icon for a forecast tile
+    const tileIcon = (c) => { const w = c ? feedWx(c) : 'partly cloudy'; return { sun: w === 'clear', partly: w === 'partly cloudy', cloud: w === 'cloudy', rain: w === 'rain', fog: w === 'fog' }; };
+    const air = F ? (F.air && F.air.aqi != null ? F.air : null) : { aqi: 12, label: 'Good' };
     return {
       glowOp: lit ? { day: 0.12, dusk: 0.5, night: 0.85 }[tod] : 0,
       // the pool's ripples fade with the light like its water, unless the pool light is on
@@ -7305,8 +7358,8 @@ class Component extends DCLogic {
       })(),
       showMoonLine: tod === 'night' || elev < 0,
       // by day the moon's place goes to the air quality (the TVs get it live from the Occidental PurpleAir)
-      showAirLine: !(tod === 'night' || elev < 0),
-      airLine: 'AQ Good (12)',
+      showAirLine: !(tod === 'night' || elev < 0) && !!air,
+      airLine: air ? 'AQ ' + air.label + ' (' + air.aqi + ')' : '',
       showSun: !isNight && sunInView,
       showRays: !isNight && sunInView && elev > -2 && elev < 26 && (wx === 'clear' || wx === 'partly cloudy'),
       raysOp: Math.max(0, Math.min(1, (26 - elev) / 14, (elev + 2) / 4)).toFixed(2),
@@ -7328,21 +7381,25 @@ class Component extends DCLogic {
       pumpOn,
       showSmoke,
       tankLabel: 'Main tank',
-      tankSub: pumpOn ? '+' + Math.round(ranMin * PUMP.rateGpm) + ' gal' : '933 gal',
+      tankBig: !FT ? '≈ 43.7%' : tankLive ? FT.pct.toFixed(1) + '%' : FT.lastGoodPct != null ? '~' + FT.lastGoodPct.toFixed(1) + '%' : '—',
+      tankSub: pumpOn ? '+' + Math.round(ranMin * PUMP.rateGpm) + ' gal' : !FT ? '933 gal'
+        : tankLive ? (FT.gal != null ? gal(FT.gal) : '') : FT.lastGoodPct != null ? [FT.lastGoodGal != null ? gal(FT.lastGoodGal) : '', 'stale'].filter(Boolean).join(' · ') : 'No reading',
       tankSubHead: pumpOn ? 'Filling' : 'Gallons',
-      usedToday: '46 gal',
-      usedMonth: '1,120 gal',
+      usedToday: !FT ? '46 gal' : FT.usedToday != null ? gal(FT.usedToday) : '—',
+      usedMonth: !FT ? '1,120 gal' : FT.usedMonth != null ? gal(FT.usedMonth) : '—',
+      tempLocal: F ? (F.wx && F.wx.temp != null ? Math.round(F.wx.temp) + '°' : '—') : '74°',
+      tempTown: F ? (F.wx && F.wx.town != null ? Math.round(F.wx.town) + '°' : '') : '67°',
       time: fmtTime(mins),
       date: now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
       // the snapshot forecast; each day's chance of rain shows from 10%
-      forecast: [
+      forecast: (F && F.forecast && F.forecast.length ? F.forecast.slice(0, 5) : [
         { day: 'Sun', hi: 75, lo: 49, rain: 0 },
         { day: 'Mon', hi: 61, lo: 48, rain: 20 },
         { day: 'Tue', hi: 62, lo: 45, rain: 90 },
         { day: 'Wed', hi: 62, lo: 43, rain: 40 },
         { day: 'Thu', hi: 60, lo: 44, rain: 3 }
-      ].map((d) => ({ ...d, rainOn: d.rain >= 10 })),
-      forecastText: 'Areas of fog before 10am. Mostly sunny. High near 58, with temperatures falling to around 54 in the afternoon. West wind 1 to 5 mph.',
+      ]).map((d) => ({ ...d, hi: Math.round(d.hi), lo: Math.round(d.lo), rain: Math.round(d.rain || 0), rainOn: d.rain >= 10, ic: tileIcon(d.cond) })),
+      forecastText,
       showForecastText
     };
   }
